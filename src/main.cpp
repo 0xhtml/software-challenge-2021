@@ -1,24 +1,20 @@
-#include <vector>
 #include <chrono>
 #include <iostream>
-#include "GameState.h"
-
-void benchmarkGetPossibleMoves(GameState *gameState) {
-    auto start = std::chrono::steady_clock::now();
-    for (int i = 0; i < 1000; ++i) {
-        gameState->getPossibleMoves();
-    }
-    auto end = std::chrono::steady_clock::now();
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms  ± 20ms";
-}
+#include "Algorithm.h"
 
 int main() {
     auto *gameState = new GameState();
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 7; ++i) {
         std::vector<Move> *possibleMoves = gameState->getPossibleMoves();
-        gameState->performMove((*possibleMoves)[0]);
+        if (!possibleMoves->empty()) {
+            gameState->performMove((*possibleMoves)[0]);
+        }
     }
     PRINT_BOARD(gameState);
-    benchmarkGetPossibleMoves(gameState);
+//    benchmarkGetPossibleMoves(gameState);
+    auto start = std::chrono::steady_clock::now();
+    (new Algorithm())->run(gameState);
+    auto end = std::chrono::steady_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms";
     return 0;
 }

@@ -1,4 +1,8 @@
+#ifndef SOFTWARE_CHALLENGE_2021_GAME_STATE_H
+#define SOFTWARE_CHALLENGE_2021_GAME_STATE_H
+
 #include <set>
+#include <vector>
 #include "Constants.h"
 
 class GameState {
@@ -16,4 +20,10 @@ public:
     unsigned char boardGet(unsigned char x, unsigned char y);
 
     void performMove(Move move);
+
+    void undoMove(Move move);
+
+    int getTurn() const;
 };
+
+#endif

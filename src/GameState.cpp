@@ -1,4 +1,3 @@
-#include <vector>
 #include "GameState.h"
 
 GameState::GameState() {
@@ -143,7 +142,6 @@ std::vector<Move> *GameState::getPossibleMoves() {
 }
 
 void GameState::performMove(Move move) {
-    PRINT_MOVE(move);
     for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
         board[move.x + PIECE(pieces, move)[i + 1][0]][move.y + PIECE(pieces, move)[i + 1][1]] = move.color + 1;
     }
@@ -153,4 +151,16 @@ void GameState::performMove(Move move) {
 
 unsigned char GameState::boardGet(unsigned char x, unsigned char y) {
     return board[x][y];
+}
+
+void GameState::undoMove(Move move) {
+    for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
+        board[move.x + PIECE(pieces, move)[i + 1][0]][move.y + PIECE(pieces, move)[i + 1][1]] = 0;
+    }
+    undeployedPieces[move.color].insert(move.piece);
+    turn--;
+}
+
+int GameState::getTurn() const {
+    return turn;
 }
