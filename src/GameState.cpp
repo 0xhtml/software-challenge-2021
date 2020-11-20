@@ -57,6 +57,12 @@ GameState::GameState() {
             }
         }
     }
+    // TODO: Filter out duplicates
+    for (auto &undeployedPiece : undeployedPieces) {
+        for (unsigned char piece = 0; piece < PIECE_COUNT; ++piece) {
+            undeployedPiece.insert(piece);
+        }
+    }
 }
 
 std::vector<Move> *GameState::getPossibleMoves() {
@@ -78,8 +84,7 @@ std::vector<Move> *GameState::getPossibleMoves() {
                     move.y = BOARD_MAX - yo;
                 }
                 for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
-                    if (PIECE(pieces, move)[i + 1][0] == xo &&
-                        PIECE(pieces, move)[i + 1][1] == yo) {
+                    if (PIECE(pieces, move)[i + 1][0] == xo && PIECE(pieces, move)[i + 1][1] == yo) {
                         possibleMoves->push_back(move);
                         break;
                     }
@@ -89,7 +94,8 @@ std::vector<Move> *GameState::getPossibleMoves() {
         return possibleMoves;
     }
 
-    for (; move.piece < PIECE_COUNT; ++move.piece) {
+    for (auto piece : undeployedPieces[move.color]) {
+        move.piece = piece;
         for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {
             for (move.flipped = 0; move.flipped < FLIPPED_COUNT; ++move.flipped) {
                 for (move.x = 0; move.x < BOARD_SIZE - PIECE(pieces, move)[6][0]; ++move.x) {
@@ -137,9 +143,11 @@ std::vector<Move> *GameState::getPossibleMoves() {
 }
 
 void GameState::performMove(Move move) {
+    PRINT_MOVE(move);
     for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
         board[move.x + PIECE(pieces, move)[i + 1][0]][move.y + PIECE(pieces, move)[i + 1][1]] = move.color + 1;
     }
+    undeployedPieces[move.color].erase(move.piece);
     turn++;
 }
 
