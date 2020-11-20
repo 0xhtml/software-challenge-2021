@@ -5,58 +5,55 @@ GameState::GameState() {
     for (unsigned char piece = 0; piece < PIECE_COUNT; ++piece) {
         for (unsigned char rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
             for (unsigned char flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
-                auto transformedPiece = new unsigned char[PIECE_COORD_COUNT][PIECE_COORD_COUNT]{};
+                pieces[piece][rotation][flipped][0][0] = PIECES[piece][0][0];
+                pieces[piece][rotation][flipped][0][1] = PIECES[piece][0][1];
                 unsigned char minX = PIECE_COORD_COUNT;
                 unsigned char minY = PIECE_COORD_COUNT;
                 unsigned char maxX = 0;
                 unsigned char maxY = 0;
-                for (unsigned char x = 0; x < PIECE_COORD_COUNT; ++x) {
-                    for (unsigned char y = 0; y < PIECE_COORD_COUNT; ++y) {
-                        unsigned char x2, y2;
-                        switch (rotation) {
-                            case 1:
-                                x2 = y;
-                                y2 = PIECE_COORD_MAX - x;
-                                break;
-                            case 2:
-                                x2 = PIECE_COORD_MAX - x;
-                                y2 = PIECE_COORD_MAX - y;
-                                break;
-                            case 3:
-                                x2 = PIECE_COORD_MAX - y;
-                                y2 = x;
-                                break;
-                            default:
-                                x2 = x;
-                                y2 = y;
-                        }
-                        if (flipped) {
-                            x2 = PIECE_COORD_MAX - x2;
-                        }
-                        if (PIECES[piece][x2][y2]) {
-                            transformedPiece[x][y] = 1;
-                            if (minX > x) {
-                                minX = x;
-                            }
-                            if (minY > y) {
-                                minY = y;
-                            }
-                            if (maxX < x) {
-                                maxX = x;
-                            }
-                            if (maxY < y) {
-                                maxY = y;
-                            }
-                        }
+                for (unsigned char i = 0; i < PIECES[piece][0][0]; ++i) {
+                    unsigned char x, y;
+                    switch (rotation) {
+                        case 1:
+                            x = PIECE_COORD_MAX - PIECES[piece][i + 1][1];
+                            y = PIECES[piece][i + 1][0];
+                            break;
+                        case 2:
+                            x = PIECE_COORD_MAX - PIECES[piece][i + 1][0];
+                            y = PIECE_COORD_MAX - PIECES[piece][i + 1][1];
+                            break;
+                        case 3:
+                            x = PIECES[piece][i + 1][1];
+                            y = PIECE_COORD_MAX - PIECES[piece][i + 1][0];
+                            break;
+                        default:
+                            x = PIECES[piece][i + 1][0];
+                            y = PIECES[piece][i + 1][1];
                     }
-                }
-                for (unsigned char x = 0; x < PIECE_COORD_COUNT - minX; ++x) {
-                    for (unsigned char y = 0; y < PIECE_COORD_COUNT - minY; ++y) {
-                        pieces[piece][rotation][flipped][x][y] = transformedPiece[x + minX][y + minY];
+                    if (flipped) {
+                        x = PIECE_COORD_MAX - x;
                     }
+                    if (minX > x) {
+                        minX = x;
+                    }
+                    if (minY > y) {
+                        minY = y;
+                    }
+                    if (maxX < x) {
+                        maxX = x;
+                    }
+                    if (maxY < y) {
+                        maxY = y;
+                    }
+                    pieces[piece][rotation][flipped][i + 1][0] = x;
+                    pieces[piece][rotation][flipped][i + 1][1] = y;
                 }
-                pieces[piece][rotation][flipped][PIECE_COORD_COUNT][0] = maxX - minX;
-                pieces[piece][rotation][flipped][PIECE_COORD_COUNT][1] = maxY - minY;
+                for (unsigned char i = 0; i < PIECES[piece][0][0]; ++i) {
+                    pieces[piece][rotation][flipped][i + 1][0] -= minX;
+                    pieces[piece][rotation][flipped][i + 1][1] -= minY;
+                }
+                pieces[piece][rotation][flipped][6][0] = maxX - minX;
+                pieces[piece][rotation][flipped][6][1] = maxY - minY;
             }
         }
     }
@@ -73,15 +70,19 @@ std::vector<Move> *GameState::getPossibleMoves() {
                 unsigned char xo = 0;
                 unsigned char yo = 0;
                 if (turn == 1 || turn == 2) {
-                    xo = PIECE_X(pieces, move)[0];
+                    xo = PIECE(pieces, move)[6][0];
                     move.x = BOARD_MAX - xo;
                 }
                 if (turn > 1) {
-                    yo = PIECE_X(pieces, move)[1];
+                    yo = PIECE(pieces, move)[6][1];
                     move.y = BOARD_MAX - yo;
                 }
-                if (pieces[move.piece][move.rotation][move.flipped][xo][yo]) {
-                    possibleMoves->push_back(move);
+                for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
+                    if (PIECE(pieces, move)[i + 1][0] == xo &&
+                        PIECE(pieces, move)[i + 1][1] == yo) {
+                        possibleMoves->push_back(move);
+                        break;
+                    }
                 }
             }
         }
@@ -91,28 +92,35 @@ std::vector<Move> *GameState::getPossibleMoves() {
     for (; move.piece < PIECE_COUNT; ++move.piece) {
         for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {
             for (move.flipped = 0; move.flipped < FLIPPED_COUNT; ++move.flipped) {
-                for (move.x = 0; move.x < BOARD_SIZE - PIECE_X(pieces, move)[0]; ++move.x) {
-                    for (move.y = 0; move.y < BOARD_SIZE - PIECE_X(pieces, move)[1]; ++move.y) {
+                for (move.x = 0; move.x < BOARD_SIZE - PIECE(pieces, move)[6][0]; ++move.x) {
+                    for (move.y = 0; move.y < BOARD_SIZE - PIECE(pieces, move)[6][1]; ++move.y) {
                         bool valid = true;
-                        for (unsigned char x = 0; x <= PIECE_X(pieces, move)[0]; ++x) {
-                            for (unsigned char y = 0; y <= PIECE_X(pieces, move)[1]; ++y) {
-                                if (pieces[move.piece][move.rotation][move.flipped][x][y] == 0) {
-                                    continue;
-                                }
-                                unsigned char color = move.color + 1;
-                                if (board[move.x + x][move.y + y] || board[move.x + x + 1][move.y + y] == color ||
-                                    board[move.x + x - 1][move.y + y] == color ||
-                                    board[move.x + x][move.y + y + 1] == color ||
-                                    board[move.x + x][move.y + y - 1] == color ||
-                                    !(board[move.x + x + 1][move.y + y + 1] == color ||
-                                      board[move.x + x + 1][move.y + y - 1] == color ||
-                                      board[move.x + x - 1][move.y + y + 1] == color ||
-                                      board[move.x + x - 1][move.y + y - 1] == color)) {
-                                    valid = false;
-                                    break;
-                                }
+                        bool diagonal = false;
+                        unsigned char i = 0;
+                        for (; i < PIECE(pieces, move)[0][0]; ++i) {
+                            unsigned char x = PIECE(pieces, move)[i + 1][0];
+                            unsigned char y = PIECE(pieces, move)[i + 1][1];
+                            unsigned char color = move.color + 1;
+                            if (board[move.x + x][move.y + y] ||
+                                (move.x + x + 1 <= BOARD_MAX && board[move.x + x + 1][move.y + y] == color) ||
+                                (move.x + x - 1 >= 0 && board[move.x + x - 1][move.y + y] == color) ||
+                                (move.y + y + 1 <= BOARD_MAX && board[move.x + x][move.y + y + 1] == color) ||
+                                (move.y + y - 1 >= 0 && board[move.x + x][move.y + y - 1] == color)) {
+                                valid = false;
+                                break;
                             }
-                            if (!valid) {
+                            if (!diagonal && ((move.x + x + 1 <= BOARD_MAX && move.y + y + 1 <= BOARD_MAX &&
+                                               board[move.x + x + 1][move.y + y + 1] == color) ||
+                                              (move.x + x + 1 <= BOARD_MAX && move.y + y - 1 >= 0 &&
+                                               board[move.x + x + 1][move.y + y - 1] == color) ||
+                                              (move.x + x - 1 >= 0 && move.y + y + 1 <= BOARD_MAX &&
+                                               board[move.x + x - 1][move.y + y + 1] == color) ||
+                                              (move.x + x - 1 >= 0 && move.y + y - 1 >= 0 &&
+                                               board[move.x + x - 1][move.y + y - 1] == color))) {
+                                diagonal = true;
+                            }
+                            if (!diagonal && i + 1 == PIECE(pieces, move)[0][1]) {
+                                valid = false;
                                 break;
                             }
                         }
@@ -129,13 +137,8 @@ std::vector<Move> *GameState::getPossibleMoves() {
 }
 
 void GameState::performMove(Move move) {
-    PRINT_MOVE(move);
-    for (unsigned char x = 0; x < PIECE_COORD_COUNT; ++x) {
-        for (unsigned char y = 0; y < PIECE_COORD_COUNT; ++y) {
-            if (pieces[move.piece][move.rotation][move.flipped][x][y]) {
-                board[move.x + x][move.y + y] = move.color + 1;
-            }
-        }
+    for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
+        board[move.x + PIECE(pieces, move)[i + 1][0]][move.y + PIECE(pieces, move)[i + 1][1]] = move.color + 1;
     }
     turn++;
 }
