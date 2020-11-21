@@ -56,7 +56,28 @@ GameState::GameState() {
             }
         }
     }
-    // TODO: Filter out duplicates
+    for (auto &piece : pieces) {
+        for (auto & rotation : piece) {
+            for (auto & flipped : rotation) {
+                if (flipped[0][0] == 0) {
+                    continue;
+                }
+                for (auto & rotation2 : piece) {
+                    for (auto & flipped2 : rotation2) {
+                        if (flipped == flipped2 || flipped2[0][0] == 0) {
+                            continue;
+                        }
+                        for (int i = 0; i < flipped[0][0]; ++i) {
+                            if (flipped[i + 1][0] == flipped2[i + 1][0] && flipped[i + 1][1] == flipped2[i + 1][1]) {
+                                flipped2[0][0] = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     for (auto &undeployedPiece : undeployedPieces) {
         for (unsigned char piece = 0; piece < PIECE_COUNT; ++piece) {
             undeployedPiece.insert(piece);
@@ -97,6 +118,9 @@ std::vector<Move> GameState::getPossibleMoves() {
         move.piece = piece;
         for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {
             for (move.flipped = 0; move.flipped < FLIPPED_COUNT; ++move.flipped) {
+                if (PIECE(pieces, move)[0][0] == 0) {
+                    continue;
+                }
                 for (move.x = 0; move.x < BOARD_SIZE - PIECE(pieces, move)[6][0]; ++move.x) {
                     for (move.y = 0; move.y < BOARD_SIZE - PIECE(pieces, move)[6][1]; ++move.y) {
                         bool valid = true;

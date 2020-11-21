@@ -5,14 +5,13 @@
 
 class Algorithm {
 private:
-    GameState gameState{};
     int initDepth = 2;
     Move bestMove{};
 
-    int alphaBeta(int depth, int alpha, int beta);
+    int alphaBeta(GameState gameState, int depth, int alpha, int beta);
 
 public:
-    Move run(GameState gameState1);
+    Move run(GameState gameState);
 };
 
 #endif

@@ -6,6 +6,7 @@ int main() {
     auto gameState = GameState{};
     for (int i = 0; i < 7; ++i) {
         std::vector<Move> possibleMoves = gameState.getPossibleMoves();
+        std::cout << possibleMoves.size() << std::endl;
         if (!possibleMoves.empty()) {
             gameState.performMove(possibleMoves[0]);
         }

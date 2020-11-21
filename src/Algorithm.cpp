@@ -1,7 +1,7 @@
 #include "Algorithm.h"
 #include <utility>
 
-int Algorithm::alphaBeta(int depth, int alpha, int beta) {
+int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     if (depth == 0) {
         int evaluation = 0;
         for (unsigned char x = 0; x < BOARD_SIZE; ++x) {
@@ -20,7 +20,7 @@ int Algorithm::alphaBeta(int depth, int alpha, int beta) {
 
     for (Move move : gameState.getPossibleMoves()) {
         gameState.performMove(move);
-        int value = -alphaBeta(depth - 1, -beta, -alpha);
+        int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
 
         if (value >= beta) return beta;
@@ -35,9 +35,8 @@ int Algorithm::alphaBeta(int depth, int alpha, int beta) {
     return alpha;
 }
 
-Move Algorithm::run(GameState gameState1) {
-    this->gameState = std::move(gameState1);
+Move Algorithm::run(GameState gameState) {
     bestMove.color = 100;
-    alphaBeta(initDepth, -1000000, 1000000);
+    alphaBeta(std::move(gameState), initDepth, -1000000, 1000000);
     return bestMove;
 }
