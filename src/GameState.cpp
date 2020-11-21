@@ -64,8 +64,8 @@ GameState::GameState() {
     }
 }
 
-std::vector<Move> *GameState::getPossibleMoves() {
-    auto possibleMoves = new std::vector<Move>();
+std::vector<Move> GameState::getPossibleMoves() {
+    auto possibleMoves = std::vector<Move>{};
     Move move{static_cast<unsigned char>(turn % COLOR_COUNT)};
 
     if (turn < 4) {
@@ -84,7 +84,7 @@ std::vector<Move> *GameState::getPossibleMoves() {
                 }
                 for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
                     if (PIECE(pieces, move)[i + 1][0] == xo && PIECE(pieces, move)[i + 1][1] == yo) {
-                        possibleMoves->push_back(move);
+                        possibleMoves.push_back(move);
                         break;
                     }
                 }
@@ -130,7 +130,7 @@ std::vector<Move> *GameState::getPossibleMoves() {
                             }
                         }
                         if (valid) {
-                            possibleMoves->push_back(move);
+                            possibleMoves.push_back(move);
                         }
                     }
                 }

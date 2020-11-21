@@ -15,7 +15,7 @@ private:
 public:
     GameState();
 
-    std::vector<Move> *getPossibleMoves();
+    std::vector<Move> getPossibleMoves();
 
     unsigned char boardGet(unsigned char x, unsigned char y);
 

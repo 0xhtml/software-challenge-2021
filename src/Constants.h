@@ -45,7 +45,6 @@ struct Move {
 #define ROTATION_COUNT 4
 #define FLIPPED_COUNT 2
 
-#define PRINT_MOVE(move) std::cout << std::to_string(move.color) << ", " << std::to_string(move.piece) << ", " << std::to_string(move.rotation) << ", " << std::to_string(move.flipped) << ", " << std::to_string(move.x) << ", " << std::to_string(move.y) << std::endl
-#define PRINT_BOARD(gameState) std::cout << std::endl; for (unsigned char x = 0; x < BOARD_SIZE; ++x) { for (unsigned char y = 0; y < BOARD_SIZE; ++y) { std::cout << (gameState->boardGet(y, x) ? std::to_string(gameState->boardGet(y, x)) : "·")  << " "; } std::cout << std::endl; } std::cout << std::endl
+#define PRINT_BOARD(gameState) std::cout << std::endl; for (unsigned char x = 0; x < BOARD_SIZE; ++x) { for (unsigned char y = 0; y < BOARD_SIZE; ++y) { std::cout << (gameState.boardGet(y, x) ? std::to_string(gameState.boardGet(y, x)) : "·")  << " "; } std::cout << std::endl; } std::cout << std::endl
 
 #endif

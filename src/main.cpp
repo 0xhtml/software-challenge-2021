@@ -3,15 +3,14 @@
 #include "Algorithm.h"
 
 int main() {
-    auto *gameState = new GameState();
+    auto gameState = GameState{};
     for (int i = 0; i < 7; ++i) {
-        std::vector<Move> *possibleMoves = gameState->getPossibleMoves();
-        if (!possibleMoves->empty()) {
-            gameState->performMove((*possibleMoves)[0]);
+        std::vector<Move> possibleMoves = gameState.getPossibleMoves();
+        if (!possibleMoves.empty()) {
+            gameState.performMove(possibleMoves[0]);
         }
     }
     PRINT_BOARD(gameState);
-//    benchmarkGetPossibleMoves(gameState);
     auto start = std::chrono::steady_clock::now();
     (new Algorithm())->run(gameState);
     auto end = std::chrono::steady_clock::now();
