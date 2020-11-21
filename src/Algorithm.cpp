@@ -1,21 +1,7 @@
 #include "Algorithm.h"
 
 int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
-    if (depth == 0) {
-        int evaluation = 0;
-        for (unsigned char x = 0; x < BOARD_SIZE; ++x) {
-            for (unsigned char y = 0; y < BOARD_SIZE; ++y) {
-                int value = gameState.boardGet(x, y);
-                if (!value) continue;
-                if (value == (gameState.getTurn() % 4) + 1 || value == ((gameState.getTurn() + 2) % 4) + 1) {
-                    evaluation += 1;
-                } else {
-                    evaluation -= 1;
-                }
-            }
-        }
-        return evaluation;
-    }
+    if (depth == 0) return evaluation.evaluate(gameState);
 
     for (Move move : gameState.getPossibleMoves()) {
         gameState.performMove(move);

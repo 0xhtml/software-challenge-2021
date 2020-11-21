@@ -2,9 +2,11 @@
 #define SOFTWARE_CHALLENGE_2021_ALGORITHM_H
 
 #include "GameState.h"
+#include "Evaluation.h"
 
 class Algorithm {
 private:
+    Evaluation evaluation{};
     int initDepth = 2;
     Move bestMove{};
 
