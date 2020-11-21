@@ -78,11 +78,6 @@ GameState::GameState() {
             }
         }
     }
-    for (auto &undeployedPiece : undeployedPieces) {
-        for (unsigned char piece = 0; piece < PIECE_COUNT; ++piece) {
-            undeployedPiece.insert(piece);
-        }
-    }
 }
 
 std::vector<Move> GameState::getPossibleMoves() {
@@ -114,8 +109,10 @@ std::vector<Move> GameState::getPossibleMoves() {
         return possibleMoves;
     }
 
-    for (auto piece : undeployedPieces[move.color]) {
-        move.piece = piece;
+    for (; move.piece < PIECE_COUNT; ++move.piece) {
+        if (deployedPieces[move.color][move.piece]) {
+            continue;
+        }
         for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {
             for (move.flipped = 0; move.flipped < FLIPPED_COUNT; ++move.flipped) {
                 if (PIECE(pieces, move)[0][0] == 0) {
@@ -169,7 +166,7 @@ void GameState::performMove(Move move) {
     for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
         board[move.x + PIECE(pieces, move)[i + 1][0]][move.y + PIECE(pieces, move)[i + 1][1]] = move.color + 1;
     }
-    undeployedPieces[move.color].erase(move.piece);
+    deployedPieces[move.color][move.piece] = 1;
     turn++;
 }
 
@@ -181,7 +178,7 @@ void GameState::undoMove(Move move) {
     for (unsigned char i = 0; i < PIECE(pieces, move)[0][0]; ++i) {
         board[move.x + PIECE(pieces, move)[i + 1][0]][move.y + PIECE(pieces, move)[i + 1][1]] = 0;
     }
-    undeployedPieces[move.color].insert(move.piece);
+    deployedPieces[move.color][move.piece] = 0;
     turn--;
 }
 
