@@ -1,5 +1,4 @@
 #include "Algorithm.h"
-#include <utility>
 
 int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     if (depth == 0) {
@@ -37,6 +36,6 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
 
 Move Algorithm::run(GameState gameState) {
     bestMove.color = 100;
-    alphaBeta(std::move(gameState), initDepth, -1000000, 1000000);
+    alphaBeta(gameState, initDepth, -1000000, 1000000);
     return bestMove;
 }

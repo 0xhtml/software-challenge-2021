@@ -1,7 +1,6 @@
 #ifndef SOFTWARE_CHALLENGE_2021_GAME_STATE_H
 #define SOFTWARE_CHALLENGE_2021_GAME_STATE_H
 
-#include <set>
 #include <vector>
 #include "Constants.h"
 
