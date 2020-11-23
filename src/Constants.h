@@ -16,7 +16,7 @@
 struct Piece {
     unsigned char coord_count;
     unsigned char diagonal_coord_count;
-    unsigned char coordinates[PIECE_COORD_COUNT][COORD_COUNT];
+    unsigned char coords[PIECE_COORD_COUNT][COORD_COUNT];
     unsigned char bounds[COORD_COUNT];
 };
 

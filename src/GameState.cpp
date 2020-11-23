@@ -14,20 +14,20 @@ GameState::GameState() {
                     unsigned char x, y;
                     switch (rotation) {
                         case 1:
-                            x = PIECE_COORD_MAX - PIECES[piece].coordinates[i][1];
-                            y = PIECES[piece].coordinates[i][0];
+                            x = PIECE_COORD_MAX - PIECES[piece].coords[i][1];
+                            y = PIECES[piece].coords[i][0];
                             break;
                         case 2:
-                            x = PIECE_COORD_MAX - PIECES[piece].coordinates[i][0];
-                            y = PIECE_COORD_MAX - PIECES[piece].coordinates[i][1];
+                            x = PIECE_COORD_MAX - PIECES[piece].coords[i][0];
+                            y = PIECE_COORD_MAX - PIECES[piece].coords[i][1];
                             break;
                         case 3:
-                            x = PIECES[piece].coordinates[i][1];
-                            y = PIECE_COORD_MAX - PIECES[piece].coordinates[i][0];
+                            x = PIECES[piece].coords[i][1];
+                            y = PIECE_COORD_MAX - PIECES[piece].coords[i][0];
                             break;
                         default:
-                            x = PIECES[piece].coordinates[i][0];
-                            y = PIECES[piece].coordinates[i][1];
+                            x = PIECES[piece].coords[i][0];
+                            y = PIECES[piece].coords[i][1];
                     }
                     if (flipped) {
                         x = PIECE_COORD_MAX - x;
@@ -44,12 +44,12 @@ GameState::GameState() {
                     if (maxY < y) {
                         maxY = y;
                     }
-                    pieces[piece][rotation][flipped].coordinates[i][0] = x;
-                    pieces[piece][rotation][flipped].coordinates[i][1] = y;
+                    pieces[piece][rotation][flipped].coords[i][0] = x;
+                    pieces[piece][rotation][flipped].coords[i][1] = y;
                 }
                 for (unsigned char i = 0; i < PIECES[piece].coord_count; ++i) {
-                    pieces[piece][rotation][flipped].coordinates[i][0] -= minX;
-                    pieces[piece][rotation][flipped].coordinates[i][1] -= minY;
+                    pieces[piece][rotation][flipped].coords[i][0] -= minX;
+                    pieces[piece][rotation][flipped].coords[i][1] -= minY;
                 }
                 pieces[piece][rotation][flipped].bounds[0] = maxX - minX;
                 pieces[piece][rotation][flipped].bounds[1] = maxY - minY;
@@ -69,10 +69,8 @@ GameState::GameState() {
                             continue;
                         }
                         for (int i = 0; i < piece[0][0].coord_count; ++i) {
-                            if (piece[rotation][flipped].coordinates[i][0] ==
-                                piece[rotation2][flipped2].coordinates[i][0] &&
-                                piece[rotation][flipped].coordinates[i][1] ==
-                                piece[rotation2][flipped2].coordinates[i][1]) {
+                            if (piece[rotation][flipped].coords[i][0] == piece[rotation2][flipped2].coords[i][0] &&
+                                piece[rotation][flipped].coords[i][1] == piece[rotation2][flipped2].coords[i][1]) {
                                 piece[rotation2][flipped2].coord_count = 0;
                                 break;
                             }
@@ -106,7 +104,7 @@ std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned 
                     move.y = BOARD_MAX - yo;
                 }
                 for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
-                    if (PIECE(pieces, move).coordinates[i][0] == xo && PIECE(pieces, move).coordinates[i][1] == yo) {
+                    if (PIECE(pieces, move).coords[i][0] == xo && PIECE(pieces, move).coords[i][1] == yo) {
                         possibleMoves.push_back(move);
                         break;
                     }
@@ -131,8 +129,8 @@ std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned 
                         bool diagonal = false;
                         unsigned char i = 0;
                         for (; i < PIECE(pieces, move).coord_count; ++i) {
-                            unsigned char x = PIECE(pieces, move).coordinates[i][0];
-                            unsigned char y = PIECE(pieces, move).coordinates[i][1];
+                            unsigned char x = PIECE(pieces, move).coords[i][0];
+                            unsigned char y = PIECE(pieces, move).coords[i][1];
                             unsigned char color = move.color + 1;
                             if (board[move.x + x][move.y + y] ||
                                 (move.x + x + 1 <= BOARD_MAX && board[move.x + x + 1][move.y + y] == color) ||
@@ -171,8 +169,7 @@ std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned 
 
 void GameState::performMove(Move move) {
     for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
-        board[move.x + PIECE(pieces, move).coordinates[i][0]][move.y + PIECE(pieces, move).coordinates[i][1]] =
-                move.color + 1;
+        board[move.x + PIECE(pieces, move).coords[i][0]][move.y + PIECE(pieces, move).coords[i][1]] = move.color + 1;
     }
     deployedPieces[move.color][move.piece] = 1;
     turn++;
@@ -184,7 +181,7 @@ unsigned char GameState::boardGet(unsigned char x, unsigned char y) {
 
 void GameState::undoMove(Move move) {
     for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
-        board[move.x + PIECE(pieces, move).coordinates[i][0]][move.y + PIECE(pieces, move).coordinates[i][1]] = 0;
+        board[move.x + PIECE(pieces, move).coords[i][0]][move.y + PIECE(pieces, move).coords[i][1]] = 0;
     }
     deployedPieces[move.color][move.piece] = 0;
     turn--;
