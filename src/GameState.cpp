@@ -57,13 +57,13 @@ GameState::GameState() {
         }
     }
     for (auto &piece : pieces) {
-        for (auto & rotation : piece) {
-            for (auto & flipped : rotation) {
+        for (auto &rotation : piece) {
+            for (auto &flipped : rotation) {
                 if (flipped[0][0] == 0) {
                     continue;
                 }
-                for (auto & rotation2 : piece) {
-                    for (auto & flipped2 : rotation2) {
+                for (auto &rotation2 : piece) {
+                    for (auto &flipped2 : rotation2) {
                         if (flipped == flipped2 || flipped2[0][0] == 0) {
                             continue;
                         }
@@ -80,7 +80,7 @@ GameState::GameState() {
     }
 }
 
-std::vector<Move> GameState::getPossibleMoves() {
+std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned char)> &filter) {
     auto possibleMoves = std::vector<Move>{};
     Move move{static_cast<unsigned char>(turn % COLOR_COUNT)};
 
@@ -110,7 +110,7 @@ std::vector<Move> GameState::getPossibleMoves() {
     }
 
     for (; move.piece < PIECE_COUNT; ++move.piece) {
-        if (deployedPieces[move.color][move.piece]) {
+        if (filter(move.piece) || deployedPieces[move.color][move.piece]) {
             continue;
         }
         for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Constants.h"
+#include <functional>
 
 class GameState {
 private:
@@ -14,7 +15,7 @@ private:
 public:
     GameState();
 
-    std::vector<Move> getPossibleMoves();
+    std::vector<Move> getPossibleMoves(const std::function<bool(unsigned char)> &filter);
 
     unsigned char boardGet(unsigned char x, unsigned char y);
 
