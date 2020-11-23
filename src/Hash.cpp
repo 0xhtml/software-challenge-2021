@@ -2,10 +2,8 @@
 #include "Hash.h"
 
 unsigned long int rand64() {
-    return (unsigned long int) rand() << (unsigned) 0 & 0x000000000000FFFFull |
-           (unsigned long int) rand() << (unsigned) 16 & 0x00000000FFFF0000ull |
-           (unsigned long int) rand() << (unsigned) 32 & 0x0000FFFF00000000ull |
-           (unsigned long int) rand() << (unsigned) 48 & 0xFFFF000000000000ull;
+    return (unsigned long int) rand() & 0x00000000FFFFFFFFull |
+           (unsigned long int) rand() << (unsigned) 32 & 0xFFFFFFFF00000000ull;
 }
 
 Hash::Hash() {
