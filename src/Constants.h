@@ -52,6 +52,10 @@ struct Move {
 #define ROTATION_COUNT 4
 #define FLIPPED_COUNT 2
 
-#define PRINT_BOARD(gameState) std::cout << std::endl; for (unsigned char x = 0; x < BOARD_SIZE; ++x) { for (unsigned char y = 0; y < BOARD_SIZE; ++y) { std::cout << (gameState.boardGet(y, x) ? std::to_string(gameState.boardGet(y, x)) : "·")  << " "; } std::cout << std::endl; } std::cout << std::endl
+#define PRINT_BOARD(gameState) std::cout << std::endl; for (unsigned char y = 0; y < BOARD_SIZE; ++y) { for (unsigned char x = 0; x < BOARD_SIZE; ++x) { std::cout << (gameState.boardGet(x, y) ? std::to_string(gameState.boardGet(x, y)) : "·")  << " "; } std::cout << std::endl; } std::cout << std::endl
+
+// TODO: Calculate most significant board position
+#define MOST_SIGNIFICANT_X 0
+#define MOST_SIGNIFICANT_Y 1
 
 #endif

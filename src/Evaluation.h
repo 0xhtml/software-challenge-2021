@@ -7,6 +7,7 @@
 struct CacheEntry {
     unsigned long int hash;
     int evaluation;
+    unsigned char control;
 };
 
 class Evaluation {

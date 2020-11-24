@@ -4,7 +4,8 @@ int Evaluation::evaluate(GameState gameState) {
     unsigned long int gameStateHash = hash.hash(gameState);
 
     for (auto &cacheEntry : cache) {
-        if (cacheEntry.hash == gameStateHash) {
+        if (cacheEntry.hash == gameStateHash &&
+            cacheEntry.control == gameState.boardGet(MOST_SIGNIFICANT_X, MOST_SIGNIFICANT_Y)) {
             return cacheEntry.evaluation;
         }
     }
@@ -23,6 +24,7 @@ int Evaluation::evaluate(GameState gameState) {
             if (cacheEntry.evaluation == 0 && (i > 0 || cacheEntry.hash == 0)) {
                 cacheEntry.hash = gameStateHash;
                 cacheEntry.evaluation = evaluation;
+                cacheEntry.control = gameState.boardGet(MOST_SIGNIFICANT_X, MOST_SIGNIFICANT_Y);
                 return evaluation;
             }
         }
