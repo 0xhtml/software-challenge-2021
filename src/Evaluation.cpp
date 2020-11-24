@@ -14,19 +14,17 @@ int Evaluation::evaluate(GameState gameState) {
         for (unsigned char y = 0; y < BOARD_SIZE; ++y) {
             int value = gameState.boardGet(x, y);
             if (!value) continue;
-            if (value == (gameState.getTurn() % 4) + 1 || value == ((gameState.getTurn() + 2) % 4) + 1) {
-                evaluation += 1;
-            } else {
-                evaluation -= 1;
-            }
+            (value - 1) % 2 == gameState.getTurn() % 2 ? (evaluation++) : (evaluation--);
         }
     }
 
-    for (auto &cacheEntry : cache) {
-        if (cacheEntry.evaluation == 0) {
-            cacheEntry.hash = gameStateHash;
-            cacheEntry.evaluation = evaluation;
-            break;
+    for (int i = 0; i < 2; ++i) {
+        for (auto &cacheEntry : cache) {
+            if (cacheEntry.evaluation == 0 && (i > 0 || cacheEntry.hash == 0)) {
+                cacheEntry.hash = gameStateHash;
+                cacheEntry.evaluation = evaluation;
+                return evaluation;
+            }
         }
     }
 
