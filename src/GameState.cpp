@@ -111,6 +111,10 @@ std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned 
                 }
             }
         }
+        if (possibleMoves.empty()) {
+            move.piece = 250;
+            possibleMoves.push_back(move);
+        }
         return possibleMoves;
     }
 
@@ -164,27 +168,36 @@ std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned 
         }
     }
 
+    if (possibleMoves.empty()) {
+        move.piece = 250;
+        possibleMoves.push_back(move);
+    }
     return possibleMoves;
 }
 
 void GameState::performMove(Move move) {
-    for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
-        board[move.x + PIECE(pieces, move).coords[i][0]][move.y + PIECE(pieces, move).coords[i][1]] = move.color + 1;
+    move.color++;
+    if (move.piece < PIECE_COUNT) {
+        for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
+            board[move.x + PIECE(pieces, move).coords[i][0]][move.y + PIECE(pieces, move).coords[i][1]] = move.color;
+        }
+        deployedPieces[move.color][move.piece] = 1;
     }
-    deployedPieces[move.color][move.piece] = 1;
     turn++;
+}
+
+void GameState::undoMove(Move move) {
+    if (move.piece < PIECE_COUNT) {
+        for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
+            board[move.x + PIECE(pieces, move).coords[i][0]][move.y + PIECE(pieces, move).coords[i][1]] = 0;
+        }
+        deployedPieces[move.color][move.piece] = 0;
+    }
+    turn--;
 }
 
 unsigned char GameState::boardGet(unsigned char x, unsigned char y) {
     return board[x][y];
-}
-
-void GameState::undoMove(Move move) {
-    for (unsigned char i = 0; i < PIECE(pieces, move).coord_count; ++i) {
-        board[move.x + PIECE(pieces, move).coords[i][0]][move.y + PIECE(pieces, move).coords[i][1]] = 0;
-    }
-    deployedPieces[move.color][move.piece] = 0;
-    turn--;
 }
 
 int GameState::getTurn() const {
