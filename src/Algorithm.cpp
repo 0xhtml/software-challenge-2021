@@ -5,7 +5,21 @@ bool filter_piece(unsigned char piece) {
 }
 
 int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
-    if (depth == 0) return evaluation.evaluate(gameState);
+    unsigned long int gameStateHash = hash.hash(gameState);
+
+    auto iterator = transpositions.find(gameStateHash);
+    if (iterator != transpositions.end()) {
+        Transposition transposition = iterator->second;
+        if (transposition.control == gameState.boardGet(MOST_SIGNIFICANT_X, MOST_SIGNIFICANT_Y) &&
+            transposition.depth >= depth && ((transposition.value >= beta && transposition.bound != 2) ||
+                                             (transposition.value < beta && transposition.bound != 1))) {
+            return transposition.value;
+        }
+    }
+
+    if (depth == 0) return Evaluation::evaluate(gameState);
+
+    int start_alpha = alpha;
 
     for (Move move : gameState.getPossibleMoves(filter_piece)) {
         gameState.performMove(move);
@@ -18,6 +32,10 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
             if (initDepth == depth) bestMove = move;
         }
     }
+
+    transpositions[gameStateHash] = {gameState.boardGet(MOST_SIGNIFICANT_X, MOST_SIGNIFICANT_Y),
+                                     static_cast<unsigned char>(alpha > beta ? 1 : alpha > start_alpha ? 2 : 0), depth,
+                                     alpha};
 
     return alpha;
 }
