@@ -20,7 +20,7 @@ unsigned long int Hash::hash(GameState gameState) {
     unsigned long int hash = 0;
     for (unsigned char x = 0; x < BOARD_SIZE; ++x) {
         for (unsigned char y = 0; y < BOARD_SIZE; ++y) {
-            unsigned char value = gameState.boardGet(x, y);
+            unsigned char value = gameState.board[x][y];
             if (value) hash ^= table[x][y][value - 1];
         }
     }

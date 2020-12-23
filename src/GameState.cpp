@@ -56,30 +56,6 @@ GameState::GameState() {
             }
         }
     }
-    for (auto &piece : pieces) {
-        for (unsigned char rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
-            for (unsigned char flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
-                if (piece[rotation][flipped].coord_count == 0) {
-                    continue;
-                }
-                for (unsigned char rotation2 = 0; rotation2 < ROTATION_COUNT; ++rotation2) {
-                    for (unsigned char flipped2 = 0; flipped2 < FLIPPED_COUNT; ++flipped2) {
-                        if ((rotation == rotation2 && flipped == flipped2) ||
-                            piece[rotation2][flipped2].coord_count == 0) {
-                            continue;
-                        }
-                        for (int i = 0; i < piece[0][0].coord_count; ++i) {
-                            if (piece[rotation][flipped].coords[i][0] == piece[rotation2][flipped2].coords[i][0] &&
-                                piece[rotation][flipped].coords[i][1] == piece[rotation2][flipped2].coords[i][1]) {
-                                piece[rotation2][flipped2].coord_count = 0;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 std::vector<Move> GameState::getPossibleMoves(const std::function<bool(unsigned char)> &filter) {
@@ -194,12 +170,4 @@ void GameState::undoMove(Move move) {
         deployedPieces[move.color][move.piece] = 0;
     }
     turn--;
-}
-
-unsigned char GameState::boardGet(unsigned char x, unsigned char y) {
-    return board[x][y];
-}
-
-int GameState::getTurn() const {
-    return turn;
 }

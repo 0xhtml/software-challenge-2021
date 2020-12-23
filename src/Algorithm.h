@@ -14,7 +14,7 @@ struct Transposition {
 
 class Algorithm {
 private:
-    int initDepth = 3;
+    int initDepth;
     Move bestMove{};
     Hash hash{};
     std::chrono::time_point<std::chrono::system_clock> start;
