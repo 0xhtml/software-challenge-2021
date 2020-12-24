@@ -8,8 +8,7 @@
 #include "Hash.h"
 
 struct Transposition {
-    unsigned char control, bound;
-    int depth, value;
+    int bound, depth, value;
 };
 
 class Algorithm {

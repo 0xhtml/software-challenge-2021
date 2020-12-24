@@ -20,8 +20,12 @@ unsigned long int Hash::hash(GameState gameState) {
     unsigned long int hash = 0;
     for (unsigned char x = 0; x < BOARD_SIZE; ++x) {
         for (unsigned char y = 0; y < BOARD_SIZE; ++y) {
-            unsigned char value = gameState.board[x][y];
-            if (value) hash ^= table[x][y][value - 1];
+            for (unsigned char color = 0; color < COLOR_COUNT; ++color) {
+                if (gameState.board[color + 1][x] & 1 << y) {
+                    hash ^= table[x][y][color];
+                    break;
+                }
+            }
         }
     }
     return hash;
