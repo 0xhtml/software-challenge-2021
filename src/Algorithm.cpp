@@ -1,7 +1,8 @@
 #include <iostream>
 #include "Algorithm.h"
+#include "Evaluation.h"
 
-bool filter_piece(unsigned char piece) {
+bool filter_piece(U8 piece) {
     return piece < 9;
 }
 
@@ -12,7 +13,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         return 0;
     }
 
-    unsigned long int gameStateHash = hash.hash(gameState);
+    U64 gameStateHash = hash.hash(gameState);
 
     auto iterator = transpositions.find(gameStateHash);
     if (iterator != transpositions.end()) {

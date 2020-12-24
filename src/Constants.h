@@ -7,10 +7,6 @@
 #define PIECE_SIZE 5
 #define PIECE_COUNT 21
 
-struct Move {
-    unsigned char color, piece, rotation, flipped, x, y;
-};
-
 #define COLOR_COUNT 4
 #define ROTATION_COUNT 4
 #define FLIPPED_COUNT 2

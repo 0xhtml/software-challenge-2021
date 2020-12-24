@@ -1,15 +1,17 @@
 #include "GameState.h"
+#include "Constants.h"
 #include "Pieces.h"
+#include "Types.h"
 
-std::vector<Move> GameState::getPossibleMoves(bool(*filter)(unsigned char)) {
+std::vector<Move> GameState::getPossibleMoves(bool(*filter)(U8)) {
     auto possibleMoves = std::vector<Move>{};
-    Move move{static_cast<unsigned char>(turn % COLOR_COUNT)};
+    Move move{static_cast<U8>(turn % COLOR_COUNT)};
 
     if (turn < 4) {
         move.piece = firstPiece;
 
-        unsigned char xo = 0;
-        unsigned char yo = 0;
+        U8 xo = 0;
+        U8 yo = 0;
 
         for (; move.rotation < ROTATION_COUNT; ++move.rotation) {
             if (turn == 1 || turn == 2) {
@@ -37,10 +39,10 @@ std::vector<Move> GameState::getPossibleMoves(bool(*filter)(unsigned char)) {
                             bool valid = true;
                             bool diagonal = false;
 
-                            for (unsigned char x = 0; x < PIECE_SIZE; ++x) {
+                            for (int x = 0; x < PIECE_SIZE; ++x) {
                                 if (PIECE(move)[x] == 0) break;
 
-                                unsigned int shiftedPiece = PIECE(move)[x] << move.y;
+                                U8 shiftedPiece = PIECE(move)[x] << move.y;
 
                                 if (board[0][move.x + x] & shiftedPiece ||
                                     (move.x + x < BOARD_MAX && board[move.color + 1][move.x + x + 1] & shiftedPiece) ||
@@ -78,22 +80,22 @@ std::vector<Move> GameState::getPossibleMoves(bool(*filter)(unsigned char)) {
 
 void GameState::performMove(Move move) {
     if (move.piece < PIECE_COUNT) {
-        for (unsigned char i = 0; i < PIECE_SIZE; ++i) {
+        for (int i = 0; i < PIECE_SIZE; ++i) {
             board[0][move.x + i] |= PIECE(move)[i] << move.y;
             board[move.color + 1][move.x + i] |= PIECE(move)[i] << move.y;
         }
-        deployedPieces[move.color][move.piece] = 1;
+        deployedPieces[move.color][move.piece] = true;
     }
     turn++;
 }
 
 void GameState::undoMove(Move move) {
     if (move.piece < PIECE_COUNT) {
-        for (unsigned char i = 0; i < PIECE_SIZE; ++i) {
+        for (int i = 0; i < PIECE_SIZE; ++i) {
             board[0][move.x + i] ^= PIECE(move)[i] << move.y;
             board[move.color + 1][move.x + i] ^= PIECE(move)[i] << move.y;
         }
-        deployedPieces[move.color][move.piece] = 0;
+        deployedPieces[move.color][move.piece] = false;
     }
     turn--;
 }

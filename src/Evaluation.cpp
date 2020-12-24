@@ -1,4 +1,5 @@
 #include "Evaluation.h"
+#include "GameState.h"
 
 int Evaluation::evaluate(GameState gameState) {
     int evaluation = 0;
