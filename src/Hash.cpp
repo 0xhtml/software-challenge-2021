@@ -1,9 +1,9 @@
-#include <cstdlib>
 #include "Hash.h"
 
 unsigned long int rand64() {
-    return (unsigned long int) rand() & 0x00000000FFFFFFFFull | // NOLINT(cert-msc50-cpp)
-           (unsigned long int) rand() << (unsigned) 32 & 0xFFFFFFFF00000000ull; // NOLINT(cert-msc50-cpp)
+    static unsigned long int next = 1;
+    next = next * 1103515245 + 12345;
+    return next;
 }
 
 Hash::Hash() {
