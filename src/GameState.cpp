@@ -42,7 +42,7 @@ std::vector<Move> GameState::getPossibleMoves(bool(*filter)(U8)) {
                             for (int x = 0; x < PIECE_SIZE; ++x) {
                                 if (PIECE(move)[x] == 0) break;
 
-                                U8 shiftedPiece = PIECE(move)[x] << move.y;
+                                U32 shiftedPiece = PIECE(move)[x] << move.y;
 
                                 if (board[0][move.x + x] & shiftedPiece ||
                                     (move.x + x < BOARD_MAX && board[move.color + 1][move.x + x + 1] & shiftedPiece) ||
