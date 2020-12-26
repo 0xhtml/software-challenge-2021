@@ -11,6 +11,4 @@
 #define ROTATION_COUNT 4
 #define FLIPPED_COUNT 2
 
-#define PRINT_BOARD(gameState) std::cout << std::endl; for (unsigned char y = 0; y < BOARD_SIZE; ++y) { for (unsigned char x = 0; x < BOARD_SIZE; ++x) { std::cout << ((gameState).board[0][x] & 1 << y ? "#" : "·")  << " "; } std::cout << std::endl; } std::cout << std::endl
-
 #endif

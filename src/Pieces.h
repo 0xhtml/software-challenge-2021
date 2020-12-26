@@ -53,4 +53,6 @@ const U8 PIECE_BOUNDS[PIECE_COUNT][2] = {{0, 0},
 #define PIECE_BOUND_X(move) PIECE_BOUNDS[(move).piece][((move).rotation == 1 || (move).rotation == 3) ? 1 : 0]
 #define PIECE_BOUND_Y(move) PIECE_BOUNDS[(move).piece][((move).rotation == 1 || (move).rotation == 3) ? 0 : 1]
 
+const U8 PIECE_ORDER_MAP[PIECE_COUNT] = {16, 15, 14, 13, 9, 18, 11, 4, 20, 19, 17, 12, 10, 8, 7, 6, 5, 3, 2, 1, 0};
+
 #endif

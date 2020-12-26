@@ -14,7 +14,7 @@ public:
     int turn = 0;
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
 
-    std::vector<Move> getPossibleMoves(bool(*filter)(unsigned char));
+    std::vector<Move> getPossibleMoves();
 
     void performMove(Move move);
 

@@ -2,10 +2,6 @@
 #include "Algorithm.h"
 #include "Evaluation.h"
 
-bool filter_piece(U8 piece) {
-    return piece < 9;
-}
-
 int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
         1900) {
@@ -28,7 +24,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
 
     int start_alpha = alpha;
 
-    for (Move move : gameState.getPossibleMoves(filter_piece)) {
+    for (Move move : gameState.getPossibleMoves()) {
         gameState.performMove(move);
         int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         if (timeout) return 0;

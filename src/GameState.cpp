@@ -3,7 +3,7 @@
 #include "Pieces.h"
 #include "Types.h"
 
-std::vector<Move> GameState::getPossibleMoves(bool(*filter)(U8)) {
+std::vector<Move> GameState::getPossibleMoves() {
     auto possibleMoves = std::vector<Move>{};
     Move move{static_cast<U8>(turn % COLOR_COUNT)};
 
@@ -27,8 +27,9 @@ std::vector<Move> GameState::getPossibleMoves(bool(*filter)(U8)) {
             }
         }
     } else {
-        for (; move.piece < PIECE_COUNT; ++move.piece) {
-            if (filter(move.piece) || deployedPieces[move.color][move.piece]) continue;
+        for (U8 piece : PIECE_ORDER_MAP) {
+            move.piece = piece;
+            if (deployedPieces[move.color][move.piece]) continue;
 
             for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {
                 for (move.flipped = 0; move.flipped < FLIPPED_COUNT; ++move.flipped) {
