@@ -13,4 +13,9 @@ struct Transposition {
     int bound, depth, value;
 };
 
+struct MoveValuePair {
+    Move move;
+    int value;
+};
+
 #endif

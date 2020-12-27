@@ -20,36 +20,64 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         }
     }
 
-    if (depth == 0) return Evaluation::evaluate(gameState);
+    if (depth <= 0) return Evaluation::evaluate(gameState);
 
-    int start_alpha = alpha;
+    int startAlpha = alpha;
 
     for (Move move : gameState.getPossibleMoves()) {
         gameState.performMove(move);
         int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
-        if (timeout) return 0;
         gameState.undoMove(move);
+        if (timeout) return 0;
 
         if (value >= beta) return beta;
         if (value > alpha) {
             alpha = value;
-            if (initDepth == depth) bestMove = move;
         }
     }
 
-    transpositions[gameStateHash] = {alpha > beta ? 1 : alpha > start_alpha ? 2 : 0, depth, alpha};
+    transpositions[gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
 
     return alpha;
 }
 
-Move Algorithm::run(GameState gameState) {
+MoveValuePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
+        1900) {
+        timeout = true;
+        return {};
+    }
+
+    Move bestMove{};
+
+    for (Move move : gameState.getPossibleMoves()) {
+        gameState.performMove(move);
+        int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        gameState.undoMove(move);
+        if (timeout) return {};
+
+        if (value >= beta) return {{}, beta};
+        if (value > alpha) {
+            alpha = value;
+            bestMove = move;
+        }
+    }
+
+    return {bestMove, alpha};
+}
+
+MoveValuePair Algorithm::iterativeDeepening(GameState gameState) {
     start = std::chrono::system_clock::now();
     timeout = false;
-    bestMove.piece = 250;
 
-    for (initDepth = 1; initDepth < 20 && !timeout; ++initDepth)
-        alphaBeta(gameState, initDepth, -2147483640, 2147483640);
-    std::cout << "Depth: " << initDepth - 1 << std::endl;
+    MoveValuePair bestValue{};
+    int initDepth;
 
-    return bestMove;
+    for (initDepth = 1; initDepth < 20 && !timeout; ++initDepth) {
+        MoveValuePair value = alphaBetaRoot(gameState, initDepth, -2147483640, 2147483640);
+        if (!timeout) bestValue = value;
+    }
+
+    std::cout << "D" << initDepth - 1 << " V" << bestValue.value << std::endl;
+    return bestValue;
 }
