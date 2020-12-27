@@ -1,5 +1,6 @@
 #include "Hash.h"
-#include "GameState.h"
+#include "Constants.h"
+#include "Pieces.h"
 #include "Types.h"
 
 U64 rand64() {
@@ -18,15 +19,12 @@ Hash::Hash() {
     }
 }
 
-U64 Hash::hash(GameState gameState) {
+U64 Hash::hash(Move move) {
     U64 hash = 0;
-    for (int x = 0; x < BOARD_SIZE; ++x) {
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            for (int color = 0; color < COLOR_COUNT; ++color) {
-                if (gameState.board[color + 1][x] & 1 << y) {
-                    hash ^= table[x][y][color];
-                    break;
-                }
+    for (int x = 0; x < PIECE_SIZE; ++x) {
+        for (int y = 0; y < PIECE_SIZE; ++y) {
+            if (PIECE(move)[x] & 1 << y) {
+                hash ^= table[move.x + x][move.y + y][move.color];
             }
         }
     }

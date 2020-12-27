@@ -85,6 +85,7 @@ void GameState::performMove(Move move) {
             board[0][move.x + i] |= PIECE(move)[i] << move.y;
             board[move.color + 1][move.x + i] |= PIECE(move)[i] << move.y;
         }
+        gameStateHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = true;
     }
     turn++;
@@ -96,6 +97,7 @@ void GameState::undoMove(Move move) {
             board[0][move.x + i] ^= PIECE(move)[i] << move.y;
             board[move.color + 1][move.x + i] ^= PIECE(move)[i] << move.y;
         }
+        gameStateHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
     }
     turn--;

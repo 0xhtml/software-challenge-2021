@@ -4,14 +4,17 @@
 #include <vector>
 #include <algorithm>
 #include "Constants.h"
+#include "Hash.h"
 #include "Types.h"
 
 class GameState {
 private:
     int firstPiece = 11;
+    Hash hash{};
 public:
     int turn = 0;
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
+    U64 gameStateHash = 0;
 
     std::vector<Move> getPossibleMoves();
 

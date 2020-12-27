@@ -9,9 +9,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         return 0;
     }
 
-    U64 gameStateHash = hash.hash(gameState);
-
-    auto iterator = transpositions.find(gameStateHash);
+    auto iterator = transpositions.find(gameState.gameStateHash);
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
         if (transposition.depth >= depth && ((transposition.value >= beta && transposition.bound != 2) ||
@@ -36,7 +34,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         }
     }
 
-    transpositions[gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
+    transpositions[gameState.gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
 
     return alpha;
 }

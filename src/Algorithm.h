@@ -4,12 +4,10 @@
 #include <unordered_map>
 #include <chrono>
 #include "GameState.h"
-#include "Hash.h"
 #include "Types.h"
 
 class Algorithm {
 private:
-    Hash hash{};
     std::chrono::time_point<std::chrono::system_clock> start;
     std::unordered_map<U64, Transposition> transpositions;
     bool timeout;
