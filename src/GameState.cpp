@@ -27,8 +27,7 @@ std::vector<Move> GameState::getPossibleMoves() {
             }
         }
     } else {
-        for (U8 piece : PIECE_ORDER_MAP) {
-            move.piece = piece;
+        for (; move.piece < PIECE_COUNT; ++move.piece) {
             if (deployedPieces[move.color][move.piece]) continue;
 
             for (move.rotation = 0; move.rotation < ROTATION_COUNT; ++move.rotation) {

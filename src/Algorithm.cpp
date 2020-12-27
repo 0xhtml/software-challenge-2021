@@ -1,6 +1,19 @@
+#include <algorithm>
 #include <iostream>
 #include "Algorithm.h"
 #include "Evaluation.h"
+
+bool compareMoves(Move a, Move b) {
+    if (a.piece == b.piece)
+        return Evaluation::evaluateCoords(a.x, a.y) > Evaluation::evaluateCoords(b.x, b.y);
+    return PIECE_EVALUATION[a.piece] > PIECE_EVALUATION[b.piece];
+}
+
+std::vector<Move> sortedPossibleMoves(GameState gameState) {
+    std::vector<Move> possibleMove = gameState.getPossibleMoves();
+    std::sort(possibleMove.begin(), possibleMove.end(), compareMoves);
+    return possibleMove;
+}
 
 int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
@@ -22,7 +35,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
 
     int startAlpha = alpha;
 
-    for (Move move : gameState.getPossibleMoves()) {
+    for (Move move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
         int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
@@ -48,7 +61,7 @@ MoveValuePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha
 
     Move bestMove{};
 
-    for (Move move : gameState.getPossibleMoves()) {
+    for (Move move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
         int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
