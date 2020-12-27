@@ -72,14 +72,13 @@ std::vector<Move> GameState::getPossibleMoves() {
     }
 
     if (possibleMoves.empty()) {
-        move.piece = 250;
-        possibleMoves.push_back(move);
+        possibleMoves.push_back({5});
     }
     return possibleMoves;
 }
 
 void GameState::performMove(Move move) {
-    if (move.piece < PIECE_COUNT) {
+    if (move.color < COLOR_COUNT) {
         for (int i = 0; i < PIECE_SIZE; ++i) {
             board[0][move.x + i] |= PIECE(move)[i] << move.y;
             board[move.color + 1][move.x + i] |= PIECE(move)[i] << move.y;
@@ -91,7 +90,7 @@ void GameState::performMove(Move move) {
 }
 
 void GameState::undoMove(Move move) {
-    if (move.piece < PIECE_COUNT) {
+    if (move.color < COLOR_COUNT) {
         for (int i = 0; i < PIECE_SIZE; ++i) {
             board[0][move.x + i] ^= PIECE(move)[i] << move.y;
             board[move.color + 1][move.x + i] ^= PIECE(move)[i] << move.y;

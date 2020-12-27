@@ -67,7 +67,7 @@ MoveValuePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha
         gameState.undoMove(move);
         if (timeout) return {};
 
-        if (value >= beta) return {{}, beta};
+        if (value >= beta) return {{5}, beta};
         if (value > alpha) {
             alpha = value;
             bestMove = move;
