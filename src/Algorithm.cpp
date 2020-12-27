@@ -47,8 +47,8 @@ Move Algorithm::run(GameState gameState) {
     timeout = false;
     bestMove.piece = 250;
 
-    for (initDepth = 1; initDepth < 20 && !timeout; initDepth++)
-        alphaBeta(gameState, initDepth, -1000000, 1000000);
+    for (initDepth = 1; initDepth < 20 && !timeout; ++initDepth)
+        alphaBeta(gameState, initDepth, -2147483640, 2147483640);
     std::cout << "Depth: " << initDepth - 1 << std::endl;
 
     return bestMove;

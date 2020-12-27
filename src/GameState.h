@@ -9,7 +9,6 @@
 class GameState {
 private:
     int firstPiece = 11;
-    bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
 public:
     int turn = 0;
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
@@ -19,6 +18,8 @@ public:
     void performMove(Move move);
 
     void undoMove(Move move);
+
+    bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
 };
 
 #endif
