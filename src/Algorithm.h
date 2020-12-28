@@ -1,8 +1,8 @@
 #ifndef SOFTWARE_CHALLENGE_2021_ALGORITHM_H
 #define SOFTWARE_CHALLENGE_2021_ALGORITHM_H
 
-#include <unordered_map>
 #include <chrono>
+#include <unordered_map>
 #include "GameState.h"
 #include "Types.h"
 

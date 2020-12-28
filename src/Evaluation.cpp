@@ -1,6 +1,5 @@
 #include "Evaluation.h"
 #include "Pieces.h"
-#include "Types.h"
 
 int Evaluation::evaluate(Move move) {
     int score = PIECE_SCORES[move.piece] * 14 * BOARD_SIZE;

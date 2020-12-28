@@ -1,7 +1,6 @@
 #ifndef SOFTWARE_CHALLENGE_2021_EVALUATION_H
 #define SOFTWARE_CHALLENGE_2021_EVALUATION_H
 
-#include <algorithm>
 #include "Constants.h"
 #include "Types.h"
 

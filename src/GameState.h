@@ -2,7 +2,6 @@
 #define SOFTWARE_CHALLENGE_2021_GAME_STATE_H
 
 #include <vector>
-#include <algorithm>
 #include "Constants.h"
 #include "Hash.h"
 #include "Types.h"

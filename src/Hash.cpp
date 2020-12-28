@@ -1,7 +1,5 @@
 #include "Hash.h"
-#include "Constants.h"
 #include "Pieces.h"
-#include "Types.h"
 
 U64 rand64() {
     static U64 next = 1;

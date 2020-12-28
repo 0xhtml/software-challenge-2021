@@ -1,8 +1,6 @@
 #include "GameState.h"
-#include "Constants.h"
 #include "Evaluation.h"
 #include "Pieces.h"
-#include "Types.h"
 
 std::vector<Move> GameState::getPossibleMoves() {
     auto possibleMoves = std::vector<Move>{};
