@@ -1,5 +1,6 @@
 #include "GameState.h"
 #include "Constants.h"
+#include "Evaluation.h"
 #include "Pieces.h"
 #include "Types.h"
 
@@ -85,6 +86,7 @@ void GameState::performMove(Move move) {
         }
         gameStateHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = true;
+        evaluation += Evaluation::evaluate(move) * (move.color % 2 ? -1 : 1);
     }
     turn++;
 }
@@ -97,6 +99,7 @@ void GameState::undoMove(Move move) {
         }
         gameStateHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
+        evaluation -= Evaluation::evaluate(move) * (move.color % 2 ? -1 : 1);
     }
     turn--;
 }

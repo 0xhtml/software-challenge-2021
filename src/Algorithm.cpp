@@ -33,7 +33,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         preBestMoveId = transposition.bestMoveId;
     }
 
-    if (depth <= 0) return Evaluation::evaluate(gameState);
+    if (depth <= 0) return gameState.evaluation * (gameState.turn % 2 ? -1 : 1);
 
     std::vector<Move> possibleMoves = sortedPossibleMoves(gameState);
 

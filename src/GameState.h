@@ -15,6 +15,7 @@ public:
     int turn = 0;
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
     U64 gameStateHash = 0;
+    int evaluation = 0;
 
     std::vector<Move> getPossibleMoves();
 

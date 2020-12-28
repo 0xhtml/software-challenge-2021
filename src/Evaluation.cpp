@@ -1,27 +1,14 @@
 #include "Evaluation.h"
-#include "GameState.h"
+#include "Pieces.h"
 #include "Types.h"
 
-int Evaluation::evaluate(GameState gameState) {
-    int score = 0;
+int Evaluation::evaluate(Move move) {
+    int score = PIECE_SCORES[move.piece] * 14 * BOARD_SIZE;
 
-    for (int color = 0; color < COLOR_COUNT; ++color) {
-        for (int piece = 0; piece < PIECE_COUNT; ++piece) {
-            if (gameState.deployedPieces[color][piece]) {
-                int pieceScore = PIECE_SCORES[piece] * 14 * BOARD_SIZE;
-                color % 2 == gameState.turn % 2 ? (score += pieceScore) : (score -= pieceScore);
-            }
-        }
-    }
-
-    for (int x = 0; x < BOARD_SIZE; ++x) {
-        U32 own = gameState.board[gameState.turn % 4 + 1][x] | gameState.board[(gameState.turn + 2) % 4 + 1][x];
-        U32 opp = gameState.board[(gameState.turn + 1) % 4 + 1][x] | gameState.board[(gameState.turn + 3) % 4 + 1][x];
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            if (own & 1 << y) {
-                score += COORD_SCORES[x][y];
-            } else if (opp & 1 << y) {
-                score -= COORD_SCORES[x][y];
+    for (int x = 0; x < PIECE_SIZE; ++x) {
+        for (int y = 0; y < PIECE_SIZE; ++y) {
+            if (PIECES[move.piece][move.rotation][move.flipped][x] & 1 << y) {
+                score += COORD_SCORES[move.x + x][move.y + y];
             }
         }
     }
