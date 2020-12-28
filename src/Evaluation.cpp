@@ -1,13 +1,6 @@
-#include <cmath>
 #include "Evaluation.h"
 #include "GameState.h"
 #include "Types.h"
-
-int Evaluation::evaluateCoords(int x, int y) {
-    int distX = BOARD_SIZE / 2 - x;
-    int distY = BOARD_SIZE / 2 - y;
-    return 14 - floor(sqrt(distX * distX + distY * distY));
-}
 
 int Evaluation::evaluate(GameState gameState) {
     int score = 0;
@@ -26,9 +19,9 @@ int Evaluation::evaluate(GameState gameState) {
         U32 opp = gameState.board[(gameState.turn + 1) % 4 + 1][x] | gameState.board[(gameState.turn + 3) % 4 + 1][x];
         for (int y = 0; y < BOARD_SIZE; ++y) {
             if (own & 1 << y) {
-                score += evaluateCoords(x, y);
+                score += COORD_SCORES[x][y];
             } else if (opp & 1 << y) {
-                score -= evaluateCoords(x, y);
+                score -= COORD_SCORES[x][y];
             }
         }
     }

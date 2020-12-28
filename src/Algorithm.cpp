@@ -5,7 +5,7 @@
 
 bool compareMoves(Move a, Move b) {
     if (a.piece == b.piece)
-        return Evaluation::evaluateCoords(a.x, a.y) > Evaluation::evaluateCoords(b.x, b.y);
+        return COORD_SCORES[a.x][a.y] > COORD_SCORES[b.x][b.y];
     return PIECE_SCORES[a.piece] > PIECE_SCORES[b.piece];
 }
 
@@ -109,6 +109,6 @@ MoveScorePair Algorithm::iterativeDeepening(GameState gameState) {
         if (!timeout) bestScore = score;
     }
 
-    std::cout << "D" << initDepth - 1 << " V" << bestScore.score << std::endl;
+    std::cout << "D" << initDepth - 1 - timeout << " V" << bestScore.score << std::endl;
     return bestScore;
 }
