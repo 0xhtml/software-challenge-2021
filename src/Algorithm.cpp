@@ -22,6 +22,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         return 0;
     }
 
+    int preBestMoveId = 0;
     auto iterator = transpositions.find(gameState.gameStateHash);
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
@@ -29,25 +30,44 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
                                              (transposition.value < beta && transposition.bound != 1))) {
             return transposition.value;
         }
+        preBestMoveId = transposition.bestMoveId;
     }
 
     if (depth <= 0) return Evaluation::evaluate(gameState);
 
-    int startAlpha = alpha;
+    std::vector<Move> possibleMoves = sortedPossibleMoves(gameState);
 
-    for (Move move : sortedPossibleMoves(gameState)) {
+    Move move = possibleMoves[preBestMoveId];
+    gameState.performMove(move);
+    int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+    gameState.undoMove(move);
+    if (timeout) return 0;
+
+    if (value >= beta) return beta;
+
+    int startAlpha = alpha;
+    if (value > alpha) {
+        alpha = value;
+    }
+
+    int bestMoveId = preBestMoveId;
+    for (int i = 0; i < possibleMoves.size(); i++) {
+        if (i == preBestMoveId) continue;
+        move = possibleMoves[i];
+
         gameState.performMove(move);
-        int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
         if (timeout) return 0;
 
         if (value >= beta) return beta;
         if (value > alpha) {
             alpha = value;
+            bestMoveId = i;
         }
     }
 
-    transpositions[gameState.gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
+    transpositions[gameState.gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha, bestMoveId};
 
     return alpha;
 }

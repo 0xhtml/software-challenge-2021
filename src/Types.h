@@ -6,11 +6,11 @@ typedef u_int32_t U32;
 typedef u_int64_t U64;
 
 struct Move {
-    unsigned char color, piece, rotation, flipped, x, y;
+    U8 color, piece, rotation, flipped, x, y;
 };
 
 struct Transposition {
-    int bound, depth, value;
+    int bound, depth, value, bestMoveId;
 };
 
 struct MoveValuePair {
