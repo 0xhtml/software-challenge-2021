@@ -6,7 +6,7 @@
 bool compareMoves(Move a, Move b) {
     if (a.piece == b.piece)
         return Evaluation::evaluateCoords(a.x, a.y) > Evaluation::evaluateCoords(b.x, b.y);
-    return PIECE_EVALUATION[a.piece] > PIECE_EVALUATION[b.piece];
+    return PIECE_SCORES[a.piece] > PIECE_SCORES[b.piece];
 }
 
 std::vector<Move> sortedPossibleMoves(GameState gameState) {
@@ -26,9 +26,9 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     auto iterator = transpositions.find(gameState.gameStateHash);
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
-        if (transposition.depth >= depth && ((transposition.value >= beta && transposition.bound != 2) ||
-                                             (transposition.value < beta && transposition.bound != 1))) {
-            return transposition.value;
+        if (transposition.depth >= depth && ((transposition.score >= beta && transposition.bound != 2) ||
+                                             (transposition.score < beta && transposition.bound != 1))) {
+            return transposition.score;
         }
         preBestMoveId = transposition.bestMoveId;
     }
@@ -39,15 +39,15 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
 
     Move move = possibleMoves[preBestMoveId];
     gameState.performMove(move);
-    int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+    int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
     gameState.undoMove(move);
     if (timeout) return 0;
 
-    if (value >= beta) return beta;
+    if (score >= beta) return beta;
 
     int startAlpha = alpha;
-    if (value > alpha) {
-        alpha = value;
+    if (score > alpha) {
+        alpha = score;
     }
 
     int bestMoveId = preBestMoveId;
@@ -56,13 +56,13 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         move = possibleMoves[i];
 
         gameState.performMove(move);
-        value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
         if (timeout) return 0;
 
-        if (value >= beta) return beta;
-        if (value > alpha) {
-            alpha = value;
+        if (score >= beta) return beta;
+        if (score > alpha) {
+            alpha = score;
             bestMoveId = i;
         }
     }
@@ -72,7 +72,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     return alpha;
 }
 
-MoveValuePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
+MoveScorePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
     if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
         1900) {
         timeout = true;
@@ -83,13 +83,13 @@ MoveValuePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha
 
     for (Move move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
-        int value = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
         if (timeout) return {};
 
-        if (value >= beta) return {{5}, beta};
-        if (value > alpha) {
-            alpha = value;
+        if (score >= beta) return {{5}, beta};
+        if (score > alpha) {
+            alpha = score;
             bestMove = move;
         }
     }
@@ -97,18 +97,18 @@ MoveValuePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha
     return {bestMove, alpha};
 }
 
-MoveValuePair Algorithm::iterativeDeepening(GameState gameState) {
+MoveScorePair Algorithm::iterativeDeepening(GameState gameState) {
     start = std::chrono::system_clock::now();
     timeout = false;
 
-    MoveValuePair bestValue{};
+    MoveScorePair bestScore{};
     int initDepth;
 
     for (initDepth = 1; initDepth < 20 && !timeout; ++initDepth) {
-        MoveValuePair value = alphaBetaRoot(gameState, initDepth, -2147483640, 2147483640);
-        if (!timeout) bestValue = value;
+        MoveScorePair score = alphaBetaRoot(gameState, initDepth, -2147483640, 2147483640);
+        if (!timeout) bestScore = score;
     }
 
-    std::cout << "D" << initDepth - 1 << " V" << bestValue.value << std::endl;
-    return bestValue;
+    std::cout << "D" << initDepth - 1 << " V" << bestScore.score << std::endl;
+    return bestScore;
 }

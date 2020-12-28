@@ -10,13 +10,13 @@ int Evaluation::evaluateCoords(int x, int y) {
 }
 
 int Evaluation::evaluate(GameState gameState) {
-    int evaluation = 0;
+    int score = 0;
 
     for (int color = 0; color < COLOR_COUNT; ++color) {
         for (int piece = 0; piece < PIECE_COUNT; ++piece) {
             if (gameState.deployedPieces[color][piece]) {
-                int value = PIECE_EVALUATION[piece] * 14 * BOARD_SIZE;
-                color % 2 == gameState.turn % 2 ? (evaluation += value) : (evaluation -= value);
+                int pieceScore = PIECE_SCORES[piece] * 14 * BOARD_SIZE;
+                color % 2 == gameState.turn % 2 ? (score += pieceScore) : (score -= pieceScore);
             }
         }
     }
@@ -26,12 +26,12 @@ int Evaluation::evaluate(GameState gameState) {
         U32 opp = gameState.board[(gameState.turn + 1) % 4 + 1][x] | gameState.board[(gameState.turn + 3) % 4 + 1][x];
         for (int y = 0; y < BOARD_SIZE; ++y) {
             if (own & 1 << y) {
-                evaluation += evaluateCoords(x, y);
+                score += evaluateCoords(x, y);
             } else if (opp & 1 << y) {
-                evaluation -= evaluateCoords(x, y);
+                score -= evaluateCoords(x, y);
             }
         }
     }
 
-    return evaluation;
+    return score;
 }
