@@ -15,6 +15,7 @@ public:
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
     U64 gameStateHash = 0;
     int evaluation = 0;
+    U64 verticalNeighbours[COLOR_COUNT][BOARD_SIZE]{};
 
     std::vector<Move> getPossibleMoves();
 

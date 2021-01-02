@@ -26,6 +26,16 @@ std::vector<Move> GameState::getPossibleMoves() {
             }
         }
     } else {
+        U32 horizontalNeighbours[BOARD_SIZE]{};
+        for (int x = 0; x < BOARD_SIZE; ++x) {
+            if (x > 0) {
+                horizontalNeighbours[x] |= board[move.color + 1][x - 1];
+            }
+            if (x < BOARD_MAX) {
+                horizontalNeighbours[x] |= board[move.color + 1][x + 1];
+            }
+        }
+
         for (; move.piece < PIECE_COUNT; ++move.piece) {
             if (deployedPieces[move.color][move.piece]) continue;
 
@@ -43,19 +53,17 @@ std::vector<Move> GameState::getPossibleMoves() {
 
                                 U32 shiftedPiece = PIECE(move)[x] << move.y;
 
-                                if (board[0][move.x + x] & shiftedPiece ||
-                                    (move.x + x < BOARD_MAX && board[move.color + 1][move.x + x + 1] & shiftedPiece) ||
-                                    (move.x + x > 0 && board[move.color + 1][move.x + x - 1] & shiftedPiece) ||
-                                    (board[move.color + 1][move.x + x] & shiftedPiece << 1) ||
-                                    (board[move.color + 1][move.x + x] & shiftedPiece >> 1)) {
+                                if (shiftedPiece & board[0][move.x + x] ||
+                                    shiftedPiece & verticalNeighbours[move.color][move.x + x] ||
+                                    shiftedPiece & horizontalNeighbours[move.x + x]) {
                                     valid = false;
                                     break;
                                 }
 
-                                if (!diagonal && (move.x + x < BOARD_MAX && board[move.color + 1][move.x + x + 1] &
-                                                                            (shiftedPiece << 1 | shiftedPiece >> 1)) ||
-                                    (move.x + x > 0 &&
-                                     board[move.color + 1][move.x + x - 1] & (shiftedPiece << 1 | shiftedPiece >> 1))) {
+                                if (!diagonal && ((move.x + x < BOARD_MAX &&
+                                                   shiftedPiece & verticalNeighbours[move.color][move.x + x + 1]) ||
+                                                  (move.x + x > 0 &&
+                                                   shiftedPiece & verticalNeighbours[move.color][move.x + x - 1]))) {
                                     diagonal = true;
                                 }
                             }
@@ -79,8 +87,10 @@ std::vector<Move> GameState::getPossibleMoves() {
 void GameState::performMove(Move move) {
     if (move.color < COLOR_COUNT) {
         for (int i = 0; i < PIECE_SIZE; ++i) {
-            board[0][move.x + i] |= PIECE(move)[i] << move.y;
-            board[move.color + 1][move.x + i] |= PIECE(move)[i] << move.y;
+            U32 shiftedPiece = PIECE(move)[i] << move.y;
+            board[0][move.x + i] |= shiftedPiece;
+            board[move.color + 1][move.x + i] |= shiftedPiece;
+            verticalNeighbours[move.color][move.x + i] |= shiftedPiece << 1 | shiftedPiece >> 1;
         }
         gameStateHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = true;
@@ -92,8 +102,11 @@ void GameState::performMove(Move move) {
 void GameState::undoMove(Move move) {
     if (move.color < COLOR_COUNT) {
         for (int i = 0; i < PIECE_SIZE; ++i) {
-            board[0][move.x + i] ^= PIECE(move)[i] << move.y;
-            board[move.color + 1][move.x + i] ^= PIECE(move)[i] << move.y;
+            U32 shiftedPiece = PIECE(move)[i] << move.y;
+            board[0][move.x + i] ^= shiftedPiece;
+            board[move.color + 1][move.x + i] ^= shiftedPiece;
+            verticalNeighbours[move.color][move.x + i] =
+                    board[move.color + 1][move.x + i] << 1 | board[move.color + 1][move.x + i] >> 1;
         }
         gameStateHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
