@@ -1,5 +1,4 @@
-#ifndef SOFTWARE_CHALLENGE_2021_CONSTANTS_H
-#define SOFTWARE_CHALLENGE_2021_CONSTANTS_H
+#pragma once
 
 #define BOARD_SIZE 20
 #define BOARD_MAX (BOARD_SIZE - 1)
@@ -10,5 +9,3 @@
 #define COLOR_COUNT 4
 #define ROTATION_COUNT 4
 #define FLIPPED_COUNT 2
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef SOFTWARE_CHALLENGE_2021_ALGORITHM_H
-#define SOFTWARE_CHALLENGE_2021_ALGORITHM_H
+#pragma once
 
 #include <chrono>
 #include <unordered_map>
@@ -19,5 +18,3 @@ private:
 public:
     MoveScorePair iterativeDeepening(GameState gameState);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef SOFTWARE_CHALLENGE_2021_GAME_STATE_H
-#define SOFTWARE_CHALLENGE_2021_GAME_STATE_H
+#pragma once
 
 #include <vector>
 #include "Constants.h"
@@ -25,5 +24,3 @@ public:
 
     bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
 };
-
-#endif

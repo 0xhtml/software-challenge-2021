@@ -1,5 +1,4 @@
-#ifndef SOFTWARE_CHALLENGE_2021_PIECES_H
-#define SOFTWARE_CHALLENGE_2021_PIECES_H
+#pragma once
 
 #include "Constants.h"
 #include "Types.h"
@@ -52,5 +51,3 @@ const U8 PIECE_BOUNDS[PIECE_COUNT][2] = {{0, 0},
 
 #define PIECE_BOUND_X(move) PIECE_BOUNDS[(move).piece][((move).rotation == 1 || (move).rotation == 3) ? 1 : 0]
 #define PIECE_BOUND_Y(move) PIECE_BOUNDS[(move).piece][((move).rotation == 1 || (move).rotation == 3) ? 0 : 1]
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef SOFTWARE_CHALLENGE_2021_HASH_H
-#define SOFTWARE_CHALLENGE_2021_HASH_H
+#pragma once
 
 #include "Constants.h"
 #include "Types.h"
@@ -12,5 +11,3 @@ public:
 
     U64 hash(Move move);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef SOFTWARE_CHALLENGE_2021_TYPES_H
-#define SOFTWARE_CHALLENGE_2021_TYPES_H
+#pragma once
 
 typedef unsigned char U8;
 typedef unsigned int U32;
@@ -17,5 +16,3 @@ struct MoveScorePair {
     Move move;
     int score;
 };
-
-#endif
