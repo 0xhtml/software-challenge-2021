@@ -11,10 +11,13 @@ private:
     std::unordered_map<U64, Transposition> transpositions;
     bool timeout;
 
+    bool checkTimeout();
+
     int alphaBeta(GameState gameState, int depth, int alpha, int beta);
 
     Move alphaBetaRoot(GameState gameState, int depth, int alpha, int beta);
 
 public:
+
     Move iterativeDeepening(GameState gameState);
 };

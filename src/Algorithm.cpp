@@ -3,6 +3,15 @@
 #include "Algorithm.h"
 #include "Evaluation.h"
 
+bool Algorithm::checkTimeout() {
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 1900) {
+        timeout = true;
+        return true;
+    }
+    return false;
+}
+
 bool compareMoves(Move a, Move b) {
     return PIECE_SCORES[a.piece] > PIECE_SCORES[b.piece];
 }
@@ -14,9 +23,7 @@ std::vector<Move> sortedPossibleMoves(GameState gameState) {
 }
 
 int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
-        1900) {
-        timeout = true;
+    if (checkTimeout()) {
         return 0;
     }
 
@@ -71,9 +78,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
 }
 
 Move Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
-        1900) {
-        timeout = true;
+    if (checkTimeout()) {
         return {};
     }
 
