@@ -105,13 +105,13 @@ Move Algorithm::iterativeDeepening(GameState gameState) {
     timeout = false;
 
     Move move{};
-    int initDepth;
+    int depth;
 
-    for (initDepth = 1; initDepth < 20 && !timeout; ++initDepth) {
-        Move newMove = alphaBetaRoot(gameState, initDepth, -2147483640, 2147483640);
+    for (depth = 1; depth < 20 && !timeout; ++depth) {
+        Move newMove = alphaBetaRoot(gameState, depth, -2147483640, 2147483640);
         if (!timeout) move = newMove;
     }
 
-    std::cout << "D" << initDepth - 1 - timeout << std::endl;
+    std::cout << "D" << depth - 1 - timeout << std::endl;
     return move;
 }
