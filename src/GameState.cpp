@@ -54,8 +54,8 @@ std::vector<Move> GameState::getPossibleMoves() {
                                 U32 shiftedPiece = PIECE(move)[x] << move.y;
 
                                 if (shiftedPiece & board[0][move.x + x] ||
-                                    shiftedPiece & verticalNeighbours[move.color][move.x + x] ||
-                                    shiftedPiece & horizontalNeighbours[move.x + x]) {
+                                    shiftedPiece & horizontalNeighbours[move.x + x] ||
+                                    shiftedPiece & verticalNeighbours[move.color][move.x + x]) {
                                     valid = false;
                                     break;
                                 }
