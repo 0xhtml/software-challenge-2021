@@ -4,8 +4,6 @@
 #include "Evaluation.h"
 
 bool compareMoves(Move a, Move b) {
-    if (a.piece == b.piece)
-        return COORD_SCORES[a.x][a.y] > COORD_SCORES[b.x][b.y];
     return PIECE_SCORES[a.piece] > PIECE_SCORES[b.piece];
 }
 
