@@ -11,8 +11,3 @@ struct Move {
 struct Transposition {
     int bound, depth, score, bestMoveId;
 };
-
-struct MoveScorePair {
-    Move move;
-    int score;
-};

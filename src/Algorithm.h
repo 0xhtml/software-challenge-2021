@@ -13,8 +13,8 @@ private:
 
     int alphaBeta(GameState gameState, int depth, int alpha, int beta);
 
-    MoveScorePair alphaBetaRoot(GameState gameState, int depth, int alpha, int beta);
+    Move alphaBetaRoot(GameState gameState, int depth, int alpha, int beta);
 
 public:
-    MoveScorePair iterativeDeepening(GameState gameState);
+    Move iterativeDeepening(GameState gameState);
 };

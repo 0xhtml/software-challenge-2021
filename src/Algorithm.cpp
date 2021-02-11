@@ -70,7 +70,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     return alpha;
 }
 
-MoveScorePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
+Move Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
     if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() >
         1900) {
         timeout = true;
@@ -85,28 +85,28 @@ MoveScorePair Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha
         gameState.undoMove(move);
         if (timeout) return {};
 
-        if (score >= beta) return {{5}, beta};
+        if (score >= beta) return move;
         if (score > alpha) {
             alpha = score;
             bestMove = move;
         }
     }
 
-    return {bestMove, alpha};
+    return bestMove;
 }
 
-MoveScorePair Algorithm::iterativeDeepening(GameState gameState) {
+Move Algorithm::iterativeDeepening(GameState gameState) {
     start = std::chrono::system_clock::now();
     timeout = false;
 
-    MoveScorePair bestScore{};
+    Move move{};
     int initDepth;
 
     for (initDepth = 1; initDepth < 20 && !timeout; ++initDepth) {
-        MoveScorePair score = alphaBetaRoot(gameState, initDepth, -2147483640, 2147483640);
-        if (!timeout) bestScore = score;
+        Move newMove = alphaBetaRoot(gameState, initDepth, -2147483640, 2147483640);
+        if (!timeout) move = newMove;
     }
 
-    std::cout << "D" << initDepth - 1 - timeout << " V" << bestScore.score << std::endl;
-    return bestScore;
+    std::cout << "D" << initDepth - 1 - timeout << std::endl;
+    return move;
 }
