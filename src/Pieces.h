@@ -25,8 +25,6 @@ const U8 PIECES[PIECE_COUNT][ROTATION_COUNT][FLIPPED_COUNT][PIECE_SIZE] = {{{{0b
                                                                            {{{0b111,  0b10,  0b10}},                                   {{0b100,  0b111, 0b100},      {0b1,    0b111, 0b1}},      {{0b10,   0b10,  0b111}}},
                                                                            {{{0b1110, 0b11},              {0b111, 0b1100}},            {{0b1,    0b11,  0b10, 0b10}, {0b10,   0b11,  0b1, 0b1}}, {{0b1100, 0b111},             {0b11, 0b1110}},            {{0b1,    0b1,   0b11, 0b10}, {0b10,   0b10, 0b11, 0b1}}}};
 
-#define PIECE(move) PIECES[(move).piece][(move).rotation][(move).flipped]
-
 const U8 PIECE_BOUNDS[PIECE_COUNT][2] = {{0, 0},
                                          {0, 1},
                                          {1, 1},
@@ -48,6 +46,3 @@ const U8 PIECE_BOUNDS[PIECE_COUNT][2] = {{0, 0},
                                          {3, 1},
                                          {2, 2},
                                          {1, 3}};
-
-#define PIECE_BOUND_X(move) PIECE_BOUNDS[(move).piece][(move).rotation % 2 ? 1 : 0]
-#define PIECE_BOUND_Y(move) PIECE_BOUNDS[(move).piece][(move).rotation % 2 ? 0 : 1]

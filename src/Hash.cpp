@@ -17,7 +17,7 @@ U64 Hash::hash(Move move) {
     U64 hash = 0;
     for (int x = 0; x < PIECE_SIZE; ++x) {
         for (int y = 0; y < PIECE_SIZE; ++y) {
-            if (PIECE(move)[x] & 1 << y) {
+            if (PIECES[move.piece][move.rotation][move.flipped][x] & 1 << y) {
                 hash ^= table[move.x + x][move.y + y][move.color];
             }
         }

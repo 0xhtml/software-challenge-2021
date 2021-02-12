@@ -7,7 +7,7 @@
 
 class GameState {
 private:
-    int firstPiece = 11;
+    U8 firstPiece = 11;
     Hash hash{};
 public:
     int turn = 0;
