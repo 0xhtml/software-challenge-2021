@@ -1,17 +1,13 @@
 #include "Hash.h"
 #include "Pieces.h"
 
-U64 rand64() {
-    static U64 next = 1;
-    next = next * 1103515245 + 12345;
-    return next;
-}
-
 Hash::Hash() {
+    U64 next = 1;
     for (auto &a : table) {
         for (auto &b : a) {
             for (auto &c : b) {
-                c = rand64();
+                next = next * 1103515245 + 12345;
+                c = next;
             }
         }
     }
