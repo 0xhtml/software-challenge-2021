@@ -27,7 +27,6 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         return 0;
     }
 
-    int preBestMoveId = 0;
     auto iterator = transpositions.find(gameState.gameStateHash);
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
@@ -35,44 +34,22 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
                                              (transposition.score < beta && transposition.bound != 1))) {
             return transposition.score;
         }
-        preBestMoveId = transposition.bestMoveId;
     }
 
     if (depth <= 0) return gameState.evaluation * (gameState.turn % 2 ? -1 : 1);
 
-    std::vector<Move> possibleMoves = sortedPossibleMoves(gameState);
-
-    Move move = possibleMoves[preBestMoveId];
-    gameState.performMove(move);
-    int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
-    gameState.undoMove(move);
-    if (timeout) return 0;
-
-    if (score >= beta) return beta;
-
     int startAlpha = alpha;
-    if (score > alpha) {
-        alpha = score;
-    }
-
-    int bestMoveId = preBestMoveId;
-    for (int i = 0; i < possibleMoves.size(); i++) {
-        if (i == preBestMoveId) continue;
-        move = possibleMoves[i];
-
+    for (auto move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
-        score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
-        if (timeout) return 0;
 
+        if (timeout) return 0;
         if (score >= beta) return beta;
-        if (score > alpha) {
-            alpha = score;
-            bestMoveId = i;
-        }
+        if (score > alpha) alpha = score;
     }
 
-    transpositions[gameState.gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha, bestMoveId};
+    transpositions[gameState.gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
 
     return alpha;
 }
