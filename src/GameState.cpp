@@ -123,8 +123,8 @@ void GameState::undoMove(Move move) {
     if (move.color < COLOR_COUNT) {
         for (int i = 0; i < PIECE_SIZE; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
-            board[0][move.x + i] ^= shiftedPiece;
-            board[move.color + 1][move.x + i] ^= shiftedPiece;
+            board[0][move.x + i] &= ~shiftedPiece;
+            board[move.color + 1][move.x + i] &= ~shiftedPiece;
             verticalNeighbours[move.color][move.x + i] =
                     board[move.color + 1][move.x + i] << 1 | board[move.color + 1][move.x + i] >> 1;
         }
