@@ -113,7 +113,7 @@ void GameState::performMove(Move move) {
             board[move.color + 1][move.x + i] |= shiftedPiece;
             verticalNeighbours[move.color][move.x + i] |= shiftedPiece << 1 | shiftedPiece >> 1;
         }
-        gameStateHash ^= hash.hash(move);
+        boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = true;
         evaluation += Evaluation::evaluate(move) * (move.color % 2 ? -1 : 1);
     }
@@ -129,7 +129,7 @@ void GameState::undoMove(Move move) {
             verticalNeighbours[move.color][move.x + i] =
                     board[move.color + 1][move.x + i] << 1 | board[move.color + 1][move.x + i] >> 1;
         }
-        gameStateHash ^= hash.hash(move);
+        boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
         evaluation -= Evaluation::evaluate(move) * (move.color % 2 ? -1 : 1);
     }

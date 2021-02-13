@@ -27,7 +27,8 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         return 0;
     }
 
-    auto iterator = transpositions.find(gameState.gameStateHash);
+    U64 hash = (gameState.boardHash << 2) + gameState.turn % 4;
+    auto iterator = transpositions.find(hash);
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
         if (transposition.depth >= depth && ((transposition.score >= beta && transposition.bound != 2) ||
@@ -49,7 +50,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         if (score > alpha) alpha = score;
     }
 
-    transpositions[gameState.gameStateHash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
+    transpositions[hash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
 
     return alpha;
 }
