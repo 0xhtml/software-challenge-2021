@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Algorithm.h"
 #include "Evaluation.h"
+#include "Pieces.h"
 
 bool Algorithm::checkTimeout() {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
@@ -13,7 +14,13 @@ bool Algorithm::checkTimeout() {
 }
 
 bool compareMoves(Move a, Move b) {
-    return PIECE_SCORES[a.piece] > PIECE_SCORES[b.piece];
+    int value = 0;
+    for (int x = 0; x < PIECE_SIZE; ++x) {
+        if (PIECES[a.piece][0][0][x] == 0 && PIECES[b.piece][0][0][x] == 0) break;
+        value += __builtin_popcount(PIECES[a.piece][0][0][x]);
+        value -= __builtin_popcount(PIECES[b.piece][0][0][x]);
+    }
+    return value > 0;
 }
 
 std::vector<Move> sortedPossibleMoves(GameState gameState) {
@@ -37,7 +44,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         }
     }
 
-    if (depth <= 0) return gameState.evaluation * (gameState.turn % 2 ? -1 : 1);
+    if (depth <= 0) return Evaluation::evaluate(gameState);
 
     int startAlpha = alpha;
     for (auto move : sortedPossibleMoves(gameState)) {
@@ -85,7 +92,7 @@ Move Algorithm::iterativeDeepening(GameState gameState) {
     Move move{};
     int depth;
 
-    for (depth = 1; !timeout && gameState.turn + depth < TURN_LIMIT; ++depth) {
+    for (depth = 1; !timeout && gameState.turn + depth <= TURN_LIMIT; ++depth) {
         Move newMove = alphaBetaRoot(gameState, depth, -2147483640, 2147483640);
         if (!timeout) move = newMove;
     }

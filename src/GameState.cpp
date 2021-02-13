@@ -115,7 +115,6 @@ void GameState::performMove(Move move) {
         }
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = true;
-        evaluation += Evaluation::evaluate(move) * (move.color % 2 ? -1 : 1);
     }
     turn++;
 }
@@ -131,7 +130,6 @@ void GameState::undoMove(Move move) {
         }
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
-        evaluation -= Evaluation::evaluate(move) * (move.color % 2 ? -1 : 1);
     }
     turn--;
 }

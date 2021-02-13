@@ -38,7 +38,7 @@ int main() {
     GameState gameState = GameState{};
     Algorithm algorithm = Algorithm{};
 
-    for (int i = 0; i < 40; ++i) {
+    for (int i = 0; i < TURN_LIMIT / 2; ++i) {
         std::vector<Move> possibleMoves = gameState.getPossibleMoves();
         gameState.performMove(possibleMoves[rand() % possibleMoves.size()]);
         gameState.performMove(algorithm.iterativeDeepening(gameState));
