@@ -14,12 +14,12 @@ public:
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
     U64 boardHash = 0;
     U64 verticalNeighbours[COLOR_COUNT][BOARD_SIZE]{};
+    U64 horizontalNeighbours[COLOR_COUNT][BOARD_SIZE]{};
+    bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
 
     std::vector<Move> getPossibleMoves();
 
     void performMove(Move move);
 
     void undoMove(Move move);
-
-    bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
 };

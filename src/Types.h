@@ -8,6 +8,11 @@ struct Move {
     U8 color, piece, rotation, flipped, x, y;
 };
 
+struct CoordValuePair {
+    U8 x, y;
+    int value;
+};
+
 struct Transposition {
     int bound, depth, score;
 };

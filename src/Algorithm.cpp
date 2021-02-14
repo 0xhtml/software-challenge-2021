@@ -13,19 +13,11 @@ bool Algorithm::checkTimeout() {
     return false;
 }
 
-bool compareMoves(Move a, Move b) {
-    int value = 0;
-    for (int x = 0; x < PIECE_SIZE; ++x) {
-        if (PIECES[a.piece][0][0][x] == 0 && PIECES[b.piece][0][0][x] == 0) break;
-        value += __builtin_popcount(PIECES[a.piece][0][0][x]);
-        value -= __builtin_popcount(PIECES[b.piece][0][0][x]);
-    }
-    return value > 0;
-}
-
-std::vector<Move> sortedPossibleMoves(GameState gameState) {
+std::vector<Move> Algorithm::sortedPossibleMoves(GameState gameState) {
     std::vector<Move> possibleMove = gameState.getPossibleMoves();
-    std::sort(possibleMove.begin(), possibleMove.end(), compareMoves);
+    std::sort(possibleMove.begin(), possibleMove.end(), [this](Move a, Move b) {
+        return evaluation.pieceEvaluation[a.piece] > evaluation.pieceEvaluation[b.piece];
+    });
     return possibleMove;
 }
 
@@ -44,7 +36,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
         }
     }
 
-    if (depth <= 0) return Evaluation::evaluate(gameState);
+    if (depth <= 0) return evaluation.evaluate(gameState);
 
     int startAlpha = alpha;
     for (auto move : sortedPossibleMoves(gameState)) {
@@ -93,7 +85,7 @@ Move Algorithm::iterativeDeepening(GameState gameState) {
     int depth;
 
     for (depth = 1; !timeout && gameState.turn + depth <= TURN_LIMIT; ++depth) {
-        Move newMove = alphaBetaRoot(gameState, depth, -2147483640, 2147483640);
+        Move newMove = alphaBetaRoot(gameState, depth, -WIN_SCORE * 2, WIN_SCORE * 2);
         if (!timeout) move = newMove;
     }
 
