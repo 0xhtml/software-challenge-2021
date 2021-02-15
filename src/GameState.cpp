@@ -13,36 +13,30 @@ std::vector<Move> GameState::getPossibleMoves() {
             }
         }
     } else if (turn < COLOR_COUNT) {
-        for (int corner = 0; corner < 4; ++corner) {
-            U8 x = 0;
-            U8 y = 0;
-
-            if (corner == 1 || corner == 2) {
-                x = BOARD_MAX;
-            }
-            if (corner > 1) {
-                y = BOARD_MAX;
-            }
-
-            if (board[0][x] & 1 << y) {
-                continue;
-            }
-
-            for (U8 rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
-                U8 xo = 0;
-                U8 yo = 0;
-
-                if (corner == 1 || corner == 2) {
-                    xo = PIECE_BOUNDS[firstPiece][rotation % 2 ? 1 : 0];
-                }
-                if (corner > 1) {
-                    yo = PIECE_BOUNDS[firstPiece][rotation % 2 ? 0 : 1];
+        for (U8 x : {0, BOARD_MAX}) {
+            for (U8 y : {0, BOARD_MAX}) {
+                if (board[0][x] & 1 << y) {
+                    continue;
                 }
 
-                for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
-                    if (PIECES[firstPiece][rotation][flipped][xo] & 1 << yo) {
-                        possibleMoves.push_back({color, firstPiece, rotation, flipped,
-                                                 static_cast<U8>(x - xo), static_cast<U8>(y - yo)});
+                for (U8 rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
+                    U8 xo = 0;
+                    U8 yo = 0;
+
+                    if (x) {
+                        xo = PIECE_BOUNDS[firstPiece][rotation % 2 ? 1 : 0];
+                    }
+                    if (y) {
+                        yo = PIECE_BOUNDS[firstPiece][rotation % 2 ? 0 : 1];
+                    }
+
+                    U8 moveX = x - xo;
+                    U8 moveY = y - yo;
+
+                    for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
+                        if (PIECES[firstPiece][rotation][flipped][xo] & 1 << yo) {
+                            possibleMoves.push_back({color, firstPiece, rotation, flipped, moveX, moveY});
+                        }
                     }
                 }
             }
