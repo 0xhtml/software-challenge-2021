@@ -7,9 +7,9 @@
 
 class GameState {
 private:
-    U8 firstPiece = 11;
     Hash hash{};
 public:
+    U8 firstPiece = 0;
     int turn = 0;
     U32 board[COLOR_COUNT + 1][BOARD_SIZE]{};
     U64 boardHash = 0;
