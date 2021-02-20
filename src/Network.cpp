@@ -45,6 +45,56 @@ void Network::joinReservation(const std::string &reservation) {
     send("<joinPrepared reservationCode=\"" + reservation + "\" />");
 }
 
+void normalizeMoveVariation(Move &move) {
+    switch (move.piece) {
+        case 0:
+        case 6:
+        case 16:
+            move.rotation = 0;
+            move.flipped = 0;
+            break;
+        case 1:
+        case 3:
+        case 4:
+        case 9:
+            move.rotation %= 2;
+            move.flipped = 0;
+            break;
+        case 2:
+        case 12:
+        case 14:
+            switch (move.rotation) {
+                case 2:
+                    move.rotation = 1;
+                    move.flipped = !move.flipped;
+                    break;
+                case 3:
+                    move.rotation = 0;
+                    move.flipped = !move.flipped;
+                    break;
+            }
+            break;
+        case 8:
+        case 17:
+            move.rotation %= 2;
+            break;
+        case 7:
+        case 10:
+        case 19:
+            switch (move.rotation) {
+                case 0:
+                case 2:
+                    move.flipped = 0;
+                    break;
+                case 3:
+                    move.rotation = 1;
+                    move.flipped = !move.flipped;
+                    break;
+            }
+            break;
+    }
+}
+
 Move parseMove(pugi::xml_node xmlMove) {
     pugi::xml_node xmlMovePiece = xmlMove.child("piece");
     pugi::xml_node xmlMovePosition = xmlMovePiece.child("position");
@@ -55,6 +105,7 @@ Move parseMove(pugi::xml_node xmlMove) {
     move.piece = STR_INDEX(PIECE_NAMES, xmlMovePiece.attribute("kind").value());
     move.rotation = STR_INDEX(ROTATION_NAMES, xmlMovePiece.attribute("rotation").value());
     move.flipped = STR_INDEX(FLIPPED_NAMES, xmlMovePiece.attribute("isFlipped").value());
+    normalizeMoveVariation(move);
 
     // NOTE: X and Y is intentionally flipped
     move.x = xmlMovePosition.attribute("y").as_int();
