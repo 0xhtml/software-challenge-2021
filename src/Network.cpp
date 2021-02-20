@@ -1,12 +1,22 @@
 #include "Network.h"
 #include "Strings.h"
 
-Network::Network(const std::string &address, int port) {
-    socket.connect(ip::tcp::endpoint(ip::make_address(address), port));
+Network::Network(const std::string &host, int port) {
+    ip::tcp::endpoint endpoint;
+
+    if (host == "localhost") {
+        endpoint.address(ip::make_address("127.0.0.1"));
+    } else {
+        endpoint = *ip::tcp::resolver(ioService).resolve(ip::tcp::resolver::query(host, ""));
+    }
+
+    endpoint.port(port);
+
+    socket.connect(endpoint);
     send("<protocol>");
 }
 
-void Network::send(std::string data) {
+void Network::send(const std::string &data) {
     write(socket, buffer(data));
 }
 

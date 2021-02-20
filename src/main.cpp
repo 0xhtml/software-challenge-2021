@@ -2,7 +2,7 @@
 #include "Network.h"
 
 int main(int argc, char **argv) {
-    std::string host = "127.0.0.1";
+    std::string host = "localhost";
     int port = 13050;
     std::string reservation;
 

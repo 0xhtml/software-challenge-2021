@@ -22,7 +22,7 @@ private:
      * Send data to server. Wrapper for boost::asio::write()
      * @param data String containing the data to be written
      */
-    void send(std::string data);
+    void send(const std::string &data);
 
     /**
      * Receive a room message (inclusive up to '</room>') from the server
@@ -46,10 +46,10 @@ private:
 public:
     /**
      * Initialize the connection to the server by connecting and sending '<protocol>'
-     * @param address String containing the server address convertible by boost::asio::ip::make_address()
+     * @param host String containing the server hostname
      * @param port Int containing the server port
      */
-    Network(const std::string &address, int port);
+    Network(const std::string &host, int port);
 
     /**
      * Join any game available game. Sends <join>-request
