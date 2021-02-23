@@ -5,13 +5,15 @@
 #include "Types.h"
 #include "GameState.h"
 
-#define WIN_SCORE 100
+#define WIN_SCORE 500
 
 class Evaluation {
 private:
     std::vector<CoordValuePair> coordsSortedByDistanceToMiddle{};
 
     int evaluateDistanceToMiddle(GameState gameState, int color);
+
+    void evaluateFields(GameState gameState, int color, int &value);
 
 public:
     int pieceEvaluation[PIECE_COUNT]{};
