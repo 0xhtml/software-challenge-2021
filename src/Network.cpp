@@ -188,7 +188,13 @@ void Network::gameLoop() {
             if (roomMessageDataClass == "memento") {
                 parseGameState(roomMessageData.child("state"));
             } else if (roomMessageDataClass == "sc.framework.plugins.protocol.MoveRequest") {
-                send(moveToXML(algorithm.iterativeDeepening(gameState)));
+                Move move = algorithm.iterativeDeepening(gameState);
+
+                if (move.color >= COLOR_COUNT) {
+                    move = gameState.getPossibleMoves()[0];
+                }
+
+                send(moveToXML(move));
             } else if (roomMessageDataClass != "welcomeMessage") {
                 // Received a room message like result or error; end connection
                 running = false;

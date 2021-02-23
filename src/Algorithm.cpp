@@ -56,16 +56,16 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
 
 Move Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
     if (checkTimeout()) {
-        return {};
+        return {5};
     }
 
-    Move bestMove{};
+    Move bestMove{5};
 
     for (Move move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
         int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
-        if (timeout) return {};
+        if (timeout) return bestMove;
 
         if (score >= beta) return move;
         if (score > alpha) {
@@ -86,7 +86,7 @@ Move Algorithm::iterativeDeepening(GameState gameState) {
 
     for (depth = 1; !timeout && gameState.turn + depth <= TURN_LIMIT; ++depth) {
         Move newMove = alphaBetaRoot(gameState, depth, -WIN_SCORE * 2, WIN_SCORE * 2);
-        if (!timeout) move = newMove;
+        if (!timeout || depth == 1) move = newMove;
     }
 
     std::cout << "D" << depth - 1 - timeout << std::endl;
