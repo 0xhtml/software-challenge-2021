@@ -63,15 +63,9 @@ void normalizeMoveVariation(Move &move) {
         case 2:
         case 12:
         case 14:
-            switch (move.rotation) {
-                case 2:
-                    move.rotation = 1;
-                    move.flipped = !move.flipped;
-                    break;
-                case 3:
-                    move.rotation = 0;
-                    move.flipped = !move.flipped;
-                    break;
+            if (move.rotation >= 2) {
+                move.rotation = (move.rotation - 1) % 2;
+                move.flipped = !move.flipped;
             }
             break;
         case 8:
