@@ -84,8 +84,8 @@ Move Algorithm::iterativeDeepening(GameState gameState) {
     Move move{};
     int depth;
 
-    for (depth = 1; !timeout && gameState.turn + depth <= TURN_LIMIT; ++depth) {
-        Move newMove = alphaBetaRoot(gameState, depth, -WIN_SCORE * 2, WIN_SCORE * 2);
+    for (depth = 1; !timeout && depth <= 20; ++depth) {
+        Move newMove = alphaBetaRoot(gameState, depth, -1000, 1000);
         if (!timeout || depth == 1) move = newMove;
     }
 

@@ -5,8 +5,6 @@
 #include "Types.h"
 #include "GameState.h"
 
-#define WIN_SCORE 500
-
 class Evaluation {
 private:
     std::vector<CoordValuePair> coordsSortedByDistanceToMiddle{};
