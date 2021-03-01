@@ -98,21 +98,16 @@ void GameState::performMove(Move move) {
             board[move.color + 1][move.x + i] |= shiftedPiece;
 
             verticalNeighbours[move.color][move.x + i] |= shiftedPiece << 1 | shiftedPiece >> 1;
+            if (move.x + i > 0) {
+                horizontalNeighbours[move.color][move.x + i - 1] |= shiftedPiece;
+            }
+            if (move.x + i < BOARD_MAX) {
+                horizontalNeighbours[move.color][move.x + i + 1] |= shiftedPiece;
+            }
         }
 
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = true;
-
-        for (int color = 0; color < COLOR_COUNT; ++color) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                if (x > 0) {
-                    horizontalNeighbours[color][x] |= board[color + 1][x - 1];
-                }
-                if (x < BOARD_MAX) {
-                    horizontalNeighbours[color][x] |= board[color + 1][x + 1];
-                }
-            }
-        }
     }
     turn++;
 }
@@ -132,14 +127,15 @@ void GameState::undoMove(Move move) {
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
 
-        for (int color = 0; color < COLOR_COUNT; ++color) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                if (x > 0) {
-                    horizontalNeighbours[color][x] |= board[color + 1][x - 1];
-                }
-                if (x < BOARD_MAX) {
-                    horizontalNeighbours[color][x] |= board[color + 1][x + 1];
-                }
+        int minX = std::max(move.x - 1, 0);
+        int maxX = std::min(move.x + PIECE_BOUNDS[move.piece][move.rotation & 2 ? 1 : 0] + 1, BOARD_SIZE);
+        for (int x = minX; x < maxX; ++x) {
+            horizontalNeighbours[move.color][x] = 0;
+            if (x > 0) {
+                horizontalNeighbours[move.color][x] |= board[move.color + 1][x - 1];
+            }
+            if (x < BOARD_MAX) {
+                horizontalNeighbours[move.color][x] |= board[move.color + 1][x + 1];
             }
         }
     }
