@@ -2,14 +2,15 @@
 #include "Pieces.h"
 
 std::vector<Move> GameState::getPossibleMoves() {
-    auto possibleMoves = std::vector<Move>{};
+    std::vector<Move> possibleMoves;
     U8 color = turn % COLOR_COUNT;
 
     if (turn == 0) {
         for (U8 rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
             for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
-                if (PIECES[firstPiece][rotation][flipped][0] & 1)
+                if (PIECES[firstPiece][rotation][flipped][0] & 1) {
                     possibleMoves.push_back({color, firstPiece, rotation, flipped, 0, 0});
+                }
             }
         }
     } else if (turn < COLOR_COUNT) {
@@ -17,6 +18,15 @@ std::vector<Move> GameState::getPossibleMoves() {
             for (U8 y : {0, BOARD_MAX}) {
                 if (board[0][x] & 1 << y) {
                     continue;
+                }
+
+                if (turn <= 2) {
+                    int dx = x == BOARD_MAX ? 0 : BOARD_MAX;
+                    int dy = y == BOARD_MAX ? 0 : BOARD_MAX;
+
+                    if (turn == 1 ? ~board[0][dx] & 1 << dy : board[(turn + 2) % COLOR_COUNT + 1][dx] & 1 << dy) {
+                        continue;
+                    }
                 }
 
                 for (U8 rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
@@ -39,6 +49,8 @@ std::vector<Move> GameState::getPossibleMoves() {
                         }
                     }
                 }
+
+                return possibleMoves;
             }
         }
     } else {
@@ -81,11 +93,12 @@ std::vector<Move> GameState::getPossibleMoves() {
                 }
             }
         }
+
+        if (possibleMoves.empty()) {
+            possibleMoves.push_back({5});
+        }
     }
 
-    if (possibleMoves.empty()) {
-        possibleMoves.push_back({5});
-    }
     return possibleMoves;
 }
 
