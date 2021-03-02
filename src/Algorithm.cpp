@@ -30,26 +30,36 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     auto iterator = transpositions.find(hash);
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
-        if (transposition.depth >= depth && ((transposition.score >= beta && transposition.bound != 2) ||
-                                             (transposition.score < beta && transposition.bound != 1))) {
-            return transposition.score;
+        if (transposition.depth >= depth) {
+            if (transposition.bound == 0) return transposition.score;
+            if (transposition.bound == 1 && transposition.score <= alpha) return alpha;
+            if (transposition.bound == 2 && transposition.score >= beta) return beta;
         }
     }
 
     if (depth <= 0) return evaluation.evaluate(gameState);
 
-    int startAlpha = alpha;
+    int bound = 1;
+
     for (auto move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
         int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
 
         if (timeout) return 0;
-        if (score >= beta) return beta;
-        if (score > alpha) alpha = score;
+
+        if (score >= beta) {
+            transpositions[hash] = {2, depth, beta};
+            return beta;
+        }
+
+        if (score > alpha) {
+            alpha = score;
+            bound = 0;
+        }
     }
 
-    transpositions[hash] = {alpha > beta ? 1 : alpha > startAlpha ? 2 : 0, depth, alpha};
+    transpositions[hash] = {bound, depth, alpha};
 
     return alpha;
 }
