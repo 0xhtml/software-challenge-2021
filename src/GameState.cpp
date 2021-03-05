@@ -61,14 +61,15 @@ std::vector<Move> GameState::getPossibleMoves() {
                 for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
                     if (PIECES[piece][rotation][flipped][0] == 0) continue;
 
-                    for (U8 x = 0; x < BOARD_SIZE - PIECE_BOUNDS[piece][rotation % 2 ? 1 : 0]; ++x) {
-                        for (U8 y = 0; y < BOARD_SIZE - PIECE_BOUNDS[piece][rotation % 2 ? 0 : 1]; ++y) {
+                    U8 pieceBoundsX = PIECE_BOUNDS[piece][rotation % 2 ? 1 : 0];
+                    U8 pieceBoundsY = PIECE_BOUNDS[piece][rotation % 2 ? 0 : 1];
+
+                    for (U8 x = 0; x < BOARD_SIZE - pieceBoundsX; ++x) {
+                        for (U8 y = 0; y < BOARD_SIZE - pieceBoundsY; ++y) {
                             bool valid = true;
                             bool diagonal = false;
 
-                            for (int i = 0; i < PIECE_SIZE; ++i) {
-                                if (PIECES[piece][rotation][flipped][i] == 0) break;
-
+                            for (int i = 0; i <= pieceBoundsX; ++i) {
                                 U32 shiftedPiece = PIECES[piece][rotation][flipped][i] << y;
 
                                 if (shiftedPiece & board[0][x + i] ||
@@ -79,8 +80,8 @@ std::vector<Move> GameState::getPossibleMoves() {
                                 }
 
                                 if (!diagonal &&
-                                    ((x + i < BOARD_MAX && shiftedPiece & verticalNeighbours[color][x + i + 1]) ||
-                                     (x + i > 0 && shiftedPiece & verticalNeighbours[color][x + i - 1]))) {
+                                    (x + i < BOARD_MAX && shiftedPiece & verticalNeighbours[color][x + i + 1] ||
+                                     x + i > 0 && shiftedPiece & verticalNeighbours[color][x + i - 1])) {
                                     diagonal = true;
                                 }
                             }
@@ -109,19 +110,16 @@ std::vector<Move> GameState::getPossibleMoves() {
 
 void GameState::performMove(Move move) {
     if (move.color < COLOR_COUNT) {
-        for (int i = 0; i < PIECE_SIZE; ++i) {
+        for (int i = 0; i <= PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
+            int x = move.x + i;
 
-            board[0][move.x + i] |= shiftedPiece;
-            board[move.color + 1][move.x + i] |= shiftedPiece;
+            board[0][x] |= shiftedPiece;
+            board[move.color + 1][x] |= shiftedPiece;
 
-            verticalNeighbours[move.color][move.x + i] |= shiftedPiece << 1 | shiftedPiece >> 1;
-            if (move.x + i > 0) {
-                horizontalNeighbours[move.color][move.x + i - 1] |= shiftedPiece;
-            }
-            if (move.x + i < BOARD_MAX) {
-                horizontalNeighbours[move.color][move.x + i + 1] |= shiftedPiece;
-            }
+            verticalNeighbours[move.color][x] |= shiftedPiece << 1 | shiftedPiece >> 1;
+            if (x > 0) horizontalNeighbours[move.color][x - 1] |= shiftedPiece;
+            if (x < BOARD_MAX) horizontalNeighbours[move.color][x + 1] |= shiftedPiece;
         }
 
         boardHash ^= hash.hash(move);
@@ -132,29 +130,27 @@ void GameState::performMove(Move move) {
 
 void GameState::undoMove(Move move) {
     if (move.color < COLOR_COUNT) {
-        for (int i = 0; i < PIECE_SIZE; ++i) {
+        for (int i = 0; i <= PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
+            int x = move.x + i;
 
-            board[0][move.x + i] &= ~shiftedPiece;
-            board[move.color + 1][move.x + i] &= ~shiftedPiece;
+            board[0][x] &= ~shiftedPiece;
+            board[move.color + 1][x] &= ~shiftedPiece;
 
-            verticalNeighbours[move.color][move.x + i] =
-                    board[move.color + 1][move.x + i] << 1 | board[move.color + 1][move.x + i] >> 1;
+            verticalNeighbours[move.color][x] = board[move.color + 1][x] << 1 | board[move.color + 1][x] >> 1;
+            horizontalNeighbours[move.color][x] = 0;
+            if (x > 0) horizontalNeighbours[move.color][x] |= board[move.color + 1][x - 1];
+            if (x < BOARD_MAX) horizontalNeighbours[move.color][x] |= board[move.color + 1][x + 1];
         }
 
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
 
-        int minX = std::max(move.x - 1, 0);
-        int maxX = std::min(move.x + PIECE_BOUNDS[move.piece][move.rotation & 2 ? 1 : 0] + 1, BOARD_SIZE);
-        for (int x = minX; x < maxX; ++x) {
-            horizontalNeighbours[move.color][x] = 0;
-            if (x > 0) {
-                horizontalNeighbours[move.color][x] |= board[move.color + 1][x - 1];
-            }
-            if (x < BOARD_MAX) {
-                horizontalNeighbours[move.color][x] |= board[move.color + 1][x + 1];
-            }
+        if (move.x == 1) {
+            horizontalNeighbours[move.color][0] = board[move.color][1];
+        }
+        if (move.x + PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0] == BOARD_MAX) {
+            horizontalNeighbours[move.color][BOARD_MAX] = board[move.color][BOARD_MAX - 1];
         }
     }
     turn--;
