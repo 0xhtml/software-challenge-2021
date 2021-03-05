@@ -53,7 +53,7 @@ std::vector<Move> GameState::getPossibleMoves() {
                 return possibleMoves;
             }
         }
-    } else {
+    } else if (gameOverTurn[color] == 0 || turn < gameOverTurn[color]) {
         for (U8 piece = 0; piece < PIECE_COUNT; ++piece) {
             if (deployedPieces[color][piece]) continue;
 
@@ -96,7 +96,12 @@ std::vector<Move> GameState::getPossibleMoves() {
 
         if (possibleMoves.empty()) {
             possibleMoves.push_back({5});
+            gameOverTurn[color] = turn;
+        } else {
+            gameOverTurn[color] = 0;
         }
+    } else {
+        possibleMoves.push_back({5});
     }
 
     return possibleMoves;
