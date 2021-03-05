@@ -8,7 +8,7 @@ struct Move {
     U8 color, piece, rotation, flipped, x, y;
 };
 
-struct CoordValuePair {
+struct PositionValuePair {
     U8 x, y;
     int value;
 };

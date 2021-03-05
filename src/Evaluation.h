@@ -7,7 +7,7 @@
 
 class Evaluation {
 private:
-    std::vector<CoordValuePair> coordsSortedByDistanceToMiddle{};
+    std::vector<PositionValuePair> positionsSortedByDistanceToMiddle{};
 
     int evaluateDistanceToMiddle(GameState gameState, int color);
 

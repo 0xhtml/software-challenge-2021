@@ -13,17 +13,17 @@ Evaluation::Evaluation() {
 
     for (U8 x = 0; x < BOARD_SIZE; ++x) {
         for (U8 y = 0; y < BOARD_SIZE; ++y) {
-            coordsSortedByDistanceToMiddle.push_back({x, y, -(abs(BOARD_SIZE / 2 - x) + abs(BOARD_SIZE / 2 - y))});
+            positionsSortedByDistanceToMiddle.push_back({x, y, -(abs(BOARD_SIZE / 2 - x) + abs(BOARD_SIZE / 2 - y))});
         }
     }
-    std::sort(coordsSortedByDistanceToMiddle.begin(), coordsSortedByDistanceToMiddle.end(),
-              [](CoordValuePair a, CoordValuePair b) { return a.value > b.value; });
+    std::sort(positionsSortedByDistanceToMiddle.begin(), positionsSortedByDistanceToMiddle.end(),
+              [](PositionValuePair a, PositionValuePair b) { return a.value > b.value; });
 }
 
 int Evaluation::evaluateDistanceToMiddle(GameState gameState, int color) {
-    for (CoordValuePair coordinateValuePair : coordsSortedByDistanceToMiddle) {
-        if (gameState.board[color + 1][coordinateValuePair.x] & 1 << coordinateValuePair.y) {
-            return coordinateValuePair.value;
+    for (PositionValuePair positionValuePair : positionsSortedByDistanceToMiddle) {
+        if (gameState.board[color + 1][positionValuePair.x] & 1 << positionValuePair.y) {
+            return positionValuePair.value;
         }
     }
     return -BOARD_SIZE;
