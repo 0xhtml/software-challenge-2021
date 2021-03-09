@@ -91,13 +91,28 @@ void evaluateSpace(const GameState &gameState, const int team, int &value) {
                 break;
         }
         value -= __builtin_popcount(gameState.board[0][x] & mask);
+
+        U32 validFields = 0;
+        for (int color : {team + 1, (team + 3) % COLOR_COUNT}) {
+            U32 colorValidFields = ~(gameState.board[0][x] | gameState.horizontalNeighbours[color][x] |
+                                     gameState.verticalNeighbours[color][x]);
+            U32 validFieldsMask = 0;
+            if (x < BOARD_MAX) {
+                validFieldsMask |= gameState.verticalNeighbours[color][x + 1];
+            }
+            if (x > 0) {
+                validFieldsMask |= gameState.verticalNeighbours[color][x - 1];
+            }
+            validFields |= colorValidFields & validFieldsMask;
+        }
+        value -= __builtin_popcount(validFields & mask) * 7;
     }
 }
 
 int Evaluation::evaluate(const GameState &gameState) const {
     int value = 0;
 
-    for (int team = 0; team < COLOR_COUNT / 2; ++team) {
+    for (int team = 0; team < TEAM_COUNT; ++team) {
         int teamValue = 0;
 
         if (gameState.turn < 4 * COLOR_COUNT) {

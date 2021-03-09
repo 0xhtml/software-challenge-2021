@@ -6,6 +6,7 @@
 #define PIECE_SIZE 5
 #define PIECE_COUNT 21
 
-#define COLOR_COUNT 4
+#define TEAM_COUNT 2
+#define COLOR_COUNT (TEAM_COUNT * 2)
 #define ROTATION_COUNT 4
 #define FLIPPED_COUNT 2
