@@ -10,7 +10,7 @@ class Algorithm {
 private:
     Evaluation evaluation{};
     std::chrono::time_point<std::chrono::system_clock> start;
-    std::unordered_map<U64, Transposition> transpositions;
+    std::unordered_map<U64, Transposition> transpositions{351061};
     bool timeout;
 
     bool checkTimeout();
