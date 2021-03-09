@@ -53,7 +53,7 @@ std::vector<Move> GameState::getPossibleMoves() {
                 return possibleMoves;
             }
         }
-    } else if (gameOverTurn[color] == 0 || turn < gameOverTurn[color]) {
+    } else if (!gameOver[color]) {
         for (U8 piece = 0; piece < PIECE_COUNT; ++piece) {
             if (deployedPieces[color][piece]) continue;
 
@@ -97,9 +97,7 @@ std::vector<Move> GameState::getPossibleMoves() {
 
         if (possibleMoves.empty()) {
             possibleMoves.push_back({5});
-            gameOverTurn[color] = turn;
-        } else {
-            gameOverTurn[color] = 0;
+            gameOver[color] = true;
         }
     } else {
         possibleMoves.push_back({5});
@@ -152,6 +150,7 @@ void GameState::undoMove(Move move) {
 
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
+        gameOver[move.color] = false;
     }
     turn--;
 }

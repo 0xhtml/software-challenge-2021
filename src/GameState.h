@@ -16,7 +16,7 @@ public:
     U32 verticalNeighbours[COLOR_COUNT][BOARD_SIZE]{};
     U32 horizontalNeighbours[COLOR_COUNT][BOARD_SIZE]{};
     bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
-    unsigned int gameOverTurn[COLOR_COUNT]{};
+    bool gameOver[COLOR_COUNT]{};
 
     std::vector<Move> getPossibleMoves();
 
