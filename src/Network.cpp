@@ -1,3 +1,5 @@
+#include <bitset>
+#include <iostream>
 #include "Network.h"
 #include "Strings.h"
 
@@ -210,4 +212,20 @@ void Network::close() {
     send("</protocol>");
     socket.shutdown(ip::tcp::socket::shutdown_both);
     socket.close();
+
+    for (int x = 0; x < BOARD_SIZE; ++x) {
+        for (int i = 0; i < COLOR_COUNT; ++i) {
+            std::string out = std::bitset<20>{gameState.board[i + 1][x]}.to_string();
+            std::replace(out.begin(), out.end(), '0', '-');
+            std::replace(out.begin(), out.end(), '1', std::to_string(i)[0]);
+            std::cout << out << "  ";
+        }
+        std::cout << std::endl;
+    }
+    for (int p = 0; p < PIECE_COUNT; ++p) {
+        for (int c = 0; c < COLOR_COUNT; ++c) {
+            std::cout << std::to_string(gameState.deployedPieces[c][p]) << "   ";
+        }
+        std::cout << std::endl;
+    }
 }
