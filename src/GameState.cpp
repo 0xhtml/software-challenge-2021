@@ -106,7 +106,7 @@ std::vector<Move> GameState::getPossibleMoves() {
     return possibleMoves;
 }
 
-void GameState::performMove(Move move) {
+void GameState::performMove(const Move &move) {
     if (move.color < COLOR_COUNT) {
         for (int i = 0; i <= PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
@@ -126,7 +126,7 @@ void GameState::performMove(Move move) {
     turn++;
 }
 
-void GameState::undoMove(Move move) {
+void GameState::undoMove(const Move &move) {
     if (move.color < COLOR_COUNT) {
         int i;
         for (i = 0; i <= PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {

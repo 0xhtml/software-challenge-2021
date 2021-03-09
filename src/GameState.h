@@ -20,7 +20,7 @@ public:
 
     std::vector<Move> getPossibleMoves();
 
-    void performMove(Move move);
+    void performMove(const Move &move);
 
-    void undoMove(Move move);
+    void undoMove(const Move &move);
 };

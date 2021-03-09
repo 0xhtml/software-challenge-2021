@@ -13,7 +13,7 @@ bool Algorithm::checkTimeout() {
     return false;
 }
 
-std::vector<Move> Algorithm::sortedPossibleMoves(GameState gameState) {
+std::vector<Move> Algorithm::sortedPossibleMoves(GameState &gameState) const {
     std::vector<Move> possibleMove = gameState.getPossibleMoves();
     std::sort(possibleMove.begin(), possibleMove.end(), [this](Move a, Move b) {
         return evaluation.pieceEvaluation[a.piece] > evaluation.pieceEvaluation[b.piece];
@@ -21,7 +21,7 @@ std::vector<Move> Algorithm::sortedPossibleMoves(GameState gameState) {
     return possibleMove;
 }
 
-int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
+int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const int beta) {
     if (checkTimeout()) {
         return 0;
     }
@@ -64,7 +64,7 @@ int Algorithm::alphaBeta(GameState gameState, int depth, int alpha, int beta) {
     return alpha;
 }
 
-Move Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int beta) {
+Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, const int beta) {
     if (checkTimeout()) {
         return {5};
     }
@@ -87,7 +87,7 @@ Move Algorithm::alphaBetaRoot(GameState gameState, int depth, int alpha, int bet
     return bestMove;
 }
 
-Move Algorithm::iterativeDeepening(GameState gameState) {
+Move Algorithm::iterativeDeepening(GameState &gameState) {
     start = std::chrono::system_clock::now();
     timeout = false;
 

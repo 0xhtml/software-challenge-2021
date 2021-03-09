@@ -20,7 +20,7 @@ Evaluation::Evaluation() {
               [](PositionValuePair a, PositionValuePair b) { return a.value > b.value; });
 }
 
-int Evaluation::evaluateDistanceToMiddle(GameState gameState, int color) {
+int Evaluation::evaluateDistanceToMiddle(const GameState &gameState, const int color) const {
     for (PositionValuePair positionValuePair : positionsSortedByDistanceToMiddle) {
         if (gameState.board[color + 1][positionValuePair.x] & 1 << positionValuePair.y) {
             return positionValuePair.value;
@@ -29,7 +29,7 @@ int Evaluation::evaluateDistanceToMiddle(GameState gameState, int color) {
     return -BOARD_SIZE;
 }
 
-void Evaluation::evaluateFields(GameState gameState, int color, int &value) {
+void Evaluation::evaluateFields(const GameState &gameState, const int color, int &value) const {
     for (int piece = 0; piece < PIECE_SIZE; ++piece) {
         if (gameState.deployedPieces[color][piece]) {
             value += pieceEvaluation[piece];
@@ -37,7 +37,7 @@ void Evaluation::evaluateFields(GameState gameState, int color, int &value) {
     }
 }
 
-void evaluateSpace(GameState gameState, int team, int &value) {
+void evaluateSpace(const GameState &gameState, const int team, int &value) {
     int corners[2][2], i = 0, side;
 
     for (int x : {0, BOARD_MAX}) {
@@ -94,7 +94,7 @@ void evaluateSpace(GameState gameState, int team, int &value) {
     }
 }
 
-int Evaluation::evaluate(GameState gameState) {
+int Evaluation::evaluate(const GameState &gameState) const {
     int value = 0;
 
     for (int team = 0; team < COLOR_COUNT / 2; ++team) {

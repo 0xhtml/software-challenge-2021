@@ -13,7 +13,7 @@ Hash::Hash() {
     }
 }
 
-U64 Hash::hash(Move move) {
+U64 Hash::hash(const Move &move) {
     U64 hash = 0;
     for (int x = 0; x < PIECE_SIZE; ++x) {
         for (int y = 0; y < PIECE_SIZE; ++y) {

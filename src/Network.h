@@ -34,14 +34,14 @@ private:
      * Parse a received game state and update gameState
      * @param xmlGameState <state> xml node out of memento
      */
-    void parseGameState(pugi::xml_node xmlGameState);
+    void parseGameState(const pugi::xml_node &xmlGameState);
 
     /**
      * Generate XML response to send a move to the server
      * @param move Move
      * @return String containing the XML response to be send
      */
-    std::string moveToXML(Move move);
+    std::string moveToXML(const Move &move);
 
 public:
     /**

@@ -15,12 +15,12 @@ private:
 
     bool checkTimeout();
 
-    std::vector<Move> sortedPossibleMoves(GameState gameState);
+    std::vector<Move> sortedPossibleMoves(GameState &gameState) const;
 
-    int alphaBeta(GameState gameState, int depth, int alpha, int beta);
+    int alphaBeta(GameState &gameState, int depth, int alpha, int beta);
 
-    Move alphaBetaRoot(GameState gameState, int depth, int alpha, int beta);
+    Move alphaBetaRoot(GameState &gameState, int depth, int alpha, int beta);
 
 public:
-    Move iterativeDeepening(GameState gameState);
+    Move iterativeDeepening(GameState &gameState);
 };

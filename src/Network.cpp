@@ -1,7 +1,7 @@
 #include "Network.h"
 #include "Strings.h"
 
-Network::Network(const std::string &host, int port) {
+Network::Network(const std::string &host, const int port) {
     ip::tcp::endpoint endpoint;
 
     if (host == "localhost") {
@@ -108,7 +108,7 @@ Move parseMove(pugi::xml_node xmlMove) {
     return move;
 }
 
-void Network::parseGameState(pugi::xml_node xmlGameState) {
+void Network::parseGameState(const pugi::xml_node &xmlGameState) {
     gameState.firstPiece = STR_INDEX(PIECE_NAMES, xmlGameState.attribute("startPiece").value());
 
     pugi::xml_node xmlMove = xmlGameState.child("lastMove");
@@ -127,7 +127,7 @@ void Network::parseGameState(pugi::xml_node xmlGameState) {
     gameState.turn = xmlGameState.attribute("turn").as_int();
 }
 
-std::string Network::moveToXML(Move move) {
+std::string Network::moveToXML(const Move &move) {
     std::string xml = "<room roomId=\"";
 
     xml.append(roomId);
