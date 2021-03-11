@@ -14,11 +14,12 @@ bool Algorithm::checkTimeout() {
 }
 
 std::vector<Move> Algorithm::sortedPossibleMoves(GameState &gameState) const {
-    std::vector<Move> possibleMove = gameState.getPossibleMoves();
-    std::sort(possibleMove.begin(), possibleMove.end(), [this](Move a, Move b) {
+    std::vector<Move> possibleMoves = gameState.getPossibleMoves();
+    std::sort(possibleMoves.begin(), possibleMoves.end(), [this](Move a, Move b) {
+        if (a.piece <= b.piece) return false;
         return evaluation.pieceEvaluation[a.piece] > evaluation.pieceEvaluation[b.piece];
     });
-    return possibleMove;
+    return possibleMoves;
 }
 
 int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const int beta) {
