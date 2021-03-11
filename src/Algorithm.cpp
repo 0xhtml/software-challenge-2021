@@ -6,7 +6,7 @@
 
 bool Algorithm::checkTimeout() {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 1900) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() >= 1950) {
         timeout = true;
         return true;
     }
