@@ -85,10 +85,14 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
         }
     }
 
+    printf("D%-2d S%-4d M{ %u %2u %u %u %2u %2u }\n", depth, alpha, bestMove.color, bestMove.piece,
+           bestMove.rotation, bestMove.flipped, bestMove.x, bestMove.y);
     return bestMove;
 }
 
 Move Algorithm::iterativeDeepening(GameState &gameState) {
+    printf("       --- TURN %2d ---\n", gameState.turn);
+
     start = std::chrono::system_clock::now();
     timeout = false;
 
@@ -100,6 +104,7 @@ Move Algorithm::iterativeDeepening(GameState &gameState) {
         if (!timeout || depth == 1) move = newMove;
     }
 
-    std::cout << "D" << depth - 1 - timeout << std::endl;
+    int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
+    printf("     --- TIME %4dms ---\n\n", time);
     return move;
 }
