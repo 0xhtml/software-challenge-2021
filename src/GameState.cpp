@@ -79,9 +79,8 @@ std::vector<Move> GameState::getPossibleMoves() {
                                     break;
                                 }
 
-                                if (!diagonal &&
-                                    (x + i < BOARD_MAX && shiftedPiece & verticalNeighbours[color][x + i + 1] ||
-                                     x + i > 0 && shiftedPiece & verticalNeighbours[color][x + i - 1])) {
+                                if (!diagonal && (shiftedPiece << 1 & horizontalNeighbours[color][x + i] ||
+                                                  shiftedPiece >> 1 & horizontalNeighbours[color][x + i])) {
                                     diagonal = true;
                                 }
                             }
@@ -128,10 +127,10 @@ void GameState::performMove(const Move &move) {
 
 void GameState::undoMove(const Move &move) {
     if (move.color < COLOR_COUNT) {
-        int i;
-        for (i = 0; i <= PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
+        int x;
+        for (int i = 0; i <= PIECE_BOUNDS[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
-            int x = move.x + i;
+            x = move.x + i;
 
             board[0][x] &= ~shiftedPiece;
             board[move.color + 1][x] &= ~shiftedPiece;
@@ -142,10 +141,19 @@ void GameState::undoMove(const Move &move) {
                 if (x > 1) horizontalNeighbours[move.color][x - 1] |= board[move.color + 1][x - 2];
             }
         }
-        for (int j = 0; j < 2 && move.x + i < BOARD_SIZE; ++j, ++i) {
-            int x = move.x + i;
-            horizontalNeighbours[move.color][x - 1] = board[move.color + 1][x];
-            if (x > 1) horizontalNeighbours[move.color][x - 1] |= board[move.color + 1][x - 2];
+
+        if (x > 0 && x < BOARD_MAX) {
+            horizontalNeighbours[move.color][x] = board[move.color + 1][x - 1] | board[move.color + 1][x + 1];
+        } else if (x > 0) {
+            horizontalNeighbours[move.color][x] = board[move.color + 1][x - 1];
+        } else {
+            horizontalNeighbours[move.color][x] = board[move.color + 1][x + 1];
+        }
+
+        if (x < BOARD_MAX - 1) {
+            horizontalNeighbours[move.color][x + 1] = board[move.color + 1][x] | board[move.color + 1][x + 2];
+        } else if (x < BOARD_MAX) {
+            horizontalNeighbours[move.color][x + 1] = board[move.color + 1][x];
         }
 
         boardHash ^= hash.hash(move);
