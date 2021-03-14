@@ -19,12 +19,10 @@ Network::Network(const std::string &host, const int port) {
 }
 
 void Network::send(const std::string &data) {
-    write(socket, buffer(data));
+    write(socket, buffer(data), error);
 }
 
 std::string Network::receive() {
-    boost::system::error_code error;
-
     std::size_t bytes = read_until(socket, receiveBuffer, "</room>", error);
 
     if (!error) {
@@ -91,7 +89,7 @@ void normalizeMoveVariation(Move &move) {
     }
 }
 
-Move parseMove(pugi::xml_node xmlMove) {
+Move parseMove(const pugi::xml_node &xmlMove) {
     pugi::xml_node xmlMovePiece = xmlMove.child("piece");
     pugi::xml_node xmlMovePosition = xmlMovePiece.child("position");
 
@@ -159,7 +157,7 @@ void Network::gameLoop() {
     while (running) {
         std::string data = receive();
         if (data.empty()) {
-            // Receive failed; end connection
+            printf("data is empty\n");
             break;
         }
 
@@ -170,7 +168,7 @@ void Network::gameLoop() {
         if (data.find("</protocol>") == std::string::npos) {
             data.append("</protocol>");
         } else {
-            // Data closes protocol; end connection
+            printf("data includes '</protocol>'\n");
             break;
         }
 
@@ -188,9 +186,7 @@ void Network::gameLoop() {
             pugi::xml_node roomMessageData = roomMessage.child("data");
             std::string roomMessageDataClass = roomMessageData.attribute("class").value();
 
-            if (roomMessageDataClass == "memento") {
-                parseGameState(roomMessageData.child("state"));
-            } else if (roomMessageDataClass == "sc.framework.plugins.protocol.MoveRequest") {
+            if (roomMessageDataClass == "sc.framework.plugins.protocol.MoveRequest") {
                 Move move = algorithm.iterativeDeepening(gameState);
 
                 if (move.color >= COLOR_COUNT) {
@@ -198,10 +194,17 @@ void Network::gameLoop() {
                 }
 
                 send(moveToXML(move));
-            } else if (roomMessageDataClass != "welcomeMessage") {
-                // Received a room message like result or error; end connection
+            } else if (roomMessageDataClass == "memento") {
+                parseGameState(roomMessageData.child("state"));
+            } else if (roomMessageDataClass == "result") {
+                pugi::xml_node winner = roomMessageData.child("winner");
+                printf("WINNER %s %s\n", winner.attribute("displayName").value(), winner.child("color").text().get());
                 running = false;
-                break;
+            } else if (roomMessageDataClass == "error") {
+                printf("ERROR %s\n", roomMessageData.attribute("message").value());
+                running = false;
+            } else {
+                printf("data includes '%s'\n", roomMessageDataClass.c_str());
             }
         }
     }
@@ -210,22 +213,21 @@ void Network::gameLoop() {
 void Network::close() {
     send("<sc.protocol.responses.CloseConnection />");
     send("</protocol>");
-    socket.shutdown(ip::tcp::socket::shutdown_both);
-    socket.close();
+    socket.shutdown(ip::tcp::socket::shutdown_both, error);
+    socket.close(error);
 
-    for (int x = 0; x < BOARD_SIZE; ++x) {
-        for (int i = 0; i < COLOR_COUNT; ++i) {
-            std::string out = std::bitset<20>{gameState.board[i + 1][x]}.to_string();
-            std::replace(out.begin(), out.end(), '0', '-');
-            std::replace(out.begin(), out.end(), '1', std::to_string(i)[0]);
-            std::cout << out << "  ";
+    std::cout << std::endl;
+    for (int i = 0; i < COLOR_COUNT; ++i) {
+        for (U32 row : gameState.board[i + 1]) {
+            printf("%05x ", row);
         }
         std::cout << std::endl;
     }
-    for (int p = 0; p < PIECE_COUNT; ++p) {
-        for (int c = 0; c < COLOR_COUNT; ++c) {
-            std::cout << std::to_string(gameState.deployedPieces[c][p]) << "   ";
+    for (auto &deployedPieces : gameState.deployedPieces) {
+        for (bool piece : deployedPieces) {
+            std::cout << std::to_string(piece);
         }
-        std::cout << std::endl;
+        std::cout << " ";
     }
+    std::cout << std::endl;
 }

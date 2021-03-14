@@ -14,6 +14,7 @@ private:
     io_service ioService;
     ip::tcp::socket socket{ioService};
     streambuf receiveBuffer;
+    boost::system::error_code error;
     std::string roomId;
     GameState gameState{};
     Algorithm algorithm{};
