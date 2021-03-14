@@ -9,5 +9,5 @@ private:
 public:
     Hash();
 
-    U64 hash(const Move &move);
+    U64 hash(const Move &move) const;
 };
