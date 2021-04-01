@@ -4,4 +4,4 @@ RUN apt update && env DEBIAN_FRONTEND=noninteractive apt install -y --no-install
 
 VOLUME /data
 WORKDIR /data/cmake-build-docker
-CMD /bin/bash -c "cmake .. && cmake --build . && zip -9j build.zip software_challenge_2021"
+CMD /bin/bash -c "cmake .. && cmake --build . --config Release --target main && zip -9j build.zip main"

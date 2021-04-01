@@ -1,12 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
 project(software_challenge_2021)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -flto -march=native")
 
-add_executable(main src/main.cpp src/Algorithm.h src/Algorithm.cpp src/Constants.h src/Evaluation.h src/Evaluation.cpp src/GameState.h src/GameState.cpp src/Hash.h src/Hash.cpp src/Network.h src/Network.cpp src/Pieces.h src/Strings.h src/Types.h)
+add_executable(main src/main.cpp src/Algorithm.cpp src/Evaluation.cpp src/GameState.cpp src/Hash.cpp src/Network.cpp)
 add_subdirectory(pugixml)
 target_link_libraries(main pugixml)
+target_link_libraries(main pthread)
 
-add_executable(test src/test.cpp src/Algorithm.h src/Algorithm.cpp src/Constants.h src/Evaluation.h src/Evaluation.cpp src/GameState.h src/GameState.cpp src/Hash.h src/Hash.cpp src/Pieces.h src/Types.h)
+add_executable(tests tests/tests.cpp tests/test-GameState.cpp src/GameState.cpp src/Hash.cpp)
+
+add_executable(masstest utils/masstest.cpp src/Algorithm.cpp src/Evaluation.cpp src/GameState.cpp src/Hash.cpp)
+target_link_libraries(masstest pthread)
+
+add_executable(bench utils/bench.cpp src/GameState.cpp src/Hash.cpp)
+target_link_libraries(bench benchmark)

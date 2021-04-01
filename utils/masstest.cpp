@@ -2,14 +2,14 @@
 #include <random>
 #include <queue>
 #include <thread>
-#include "Algorithm.h"
-#include "Pieces.h"
+#include "../src/Algorithm.h"
+#include "../src/Pieces.h"
 
 #define GAME_COUNT 100
 
 void worker(std::queue<int> *runQueue, std::queue<std::pair<int, int>> *resultQueue) {
     std::random_device randomDevice;
-    std::uniform_int_distribution<int> distribution(0, PIECE_COUNT - 1);
+    std::uniform_int_distribution<int> distribution(0, 15);
 
     while (!runQueue->empty()) {
         runQueue->pop();
@@ -25,7 +25,6 @@ void worker(std::queue<int> *runQueue, std::queue<std::pair<int, int>> *resultQu
                 gameState.performMove(algorithm.iterativeDeepening(gameState));
             } else {
                 std::vector<Move> possibleMoves = gameState.getPossibleMoves();
-                if (possibleMoves.empty()) possibleMoves.push_back({5});
                 std::uniform_int_distribution<int> distribution1{0, static_cast<int>(possibleMoves.size() - 1)};
                 gameState.performMove(possibleMoves[distribution1(randomDevice)]);
             }
