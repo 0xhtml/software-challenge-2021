@@ -5,11 +5,13 @@
 #include "Pieces.h"
 
 bool Algorithm::checkTimeout() {
+#ifndef NO_TIMEOUT
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() >= 1950) {
         timeout = true;
         return true;
     }
+#endif
     return false;
 }
 
@@ -85,13 +87,17 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
         }
     }
 
+#ifndef NO_OUTPUT
     printf("D%-2d S%-4d M{ %u %2u %u %u %2u %2u }\n", depth, alpha, bestMove.color, bestMove.piece,
            bestMove.rotation, bestMove.flipped, bestMove.x, bestMove.y);
+#endif
     return bestMove;
 }
 
 Move Algorithm::iterativeDeepening(GameState &gameState) {
+#ifndef NO_OUTPUT
     printf("       --- TURN %2d ---\n", gameState.turn);
+#endif
 
     start = std::chrono::system_clock::now();
     timeout = false;
@@ -104,7 +110,9 @@ Move Algorithm::iterativeDeepening(GameState &gameState) {
         if (!timeout || depth == 1) move = newMove;
     }
 
+#ifndef NO_OUTPUT
     int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
     printf("     --- TIME %4dms ---\n\n", time);
+#endif
     return move;
 }
