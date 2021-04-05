@@ -1,8 +1,10 @@
 #pragma once
 
-typedef unsigned char U8;
-typedef unsigned int U32;
-typedef unsigned long int U64;
+#include <stdint.h>
+
+typedef uint8_t U8;
+typedef uint32_t U32;
+typedef uint64_t U64;
 
 struct Move {
     U8 color, piece, rotation, flipped, x, y;
