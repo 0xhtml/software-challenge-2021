@@ -18,8 +18,11 @@ bool Algorithm::checkTimeout() {
 std::vector<Move> Algorithm::sortedPossibleMoves(GameState &gameState) const {
     std::vector<Move> possibleMoves = gameState.getPossibleMoves();
     std::sort(possibleMoves.begin(), possibleMoves.end(), [this](Move a, Move b) {
-        if (a.piece <= b.piece) return false;
-        return evaluation.pieceEvaluation[a.piece] > evaluation.pieceEvaluation[b.piece];
+        if (a.piece != b.piece) {
+            int diff = evaluation.pieceEvaluation[a.piece] - evaluation.pieceEvaluation[b.piece];
+            if (diff != 0) return diff > 0;
+        }
+        return history[a.piece][a.rotation][a.flipped][a.x][a.y] > history[b.piece][b.rotation][b.flipped][b.x][b.y];
     });
     return possibleMoves;
 }
@@ -53,6 +56,7 @@ int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const
 
         if (score >= beta) {
             transpositions[hash] = {2, depth, beta};
+            ++history[move.piece][move.rotation][move.flipped][move.x][move.y];
             return beta;
         }
 
@@ -74,7 +78,7 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
 
     Move bestMove{5};
 
-    for (Move move : sortedPossibleMoves(gameState)) {
+    for (Move move : gameState.getPossibleMoves()) {
         gameState.performMove(move);
         int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
         gameState.undoMove(move);
