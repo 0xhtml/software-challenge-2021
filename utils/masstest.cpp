@@ -5,29 +5,29 @@
 #include "../src/Algorithm.h"
 #include "../src/Pieces.h"
 
-#define GAME_COUNT 100
+#define GAME_COUNT 1000
+#define THREADS 8
 
-void worker(std::queue<int> *runQueue, std::queue<std::pair<int, int>> *resultQueue) {
+void worker(std::queue<bool> *counter, std::queue<std::pair<int, int>> *results) {
     std::random_device randomDevice;
     std::uniform_int_distribution<int> distribution(0, 15);
 
-    while (!runQueue->empty()) {
-        runQueue->pop();
+    while (!counter->empty()) {
+        counter->pop();
 
         GameState gameState{};
         gameState.firstPiece = distribution(randomDevice);
 
         Algorithm algorithm{};
 
-        for (int i = 0; i < COLOR_COUNT * PIECE_COUNT; ++i) {
+        for (int i = 0; i < TEAM_COUNT * PIECE_COUNT; ++i) {
             gameState.gameOver[gameState.turn % COLOR_COUNT] = false;
-            if (gameState.turn % 2 == 0) {
-                gameState.performMove(algorithm.iterativeDeepening(gameState));
-            } else {
-                std::vector<Move> possibleMoves = gameState.getPossibleMoves();
-                std::uniform_int_distribution<int> distribution1{0, static_cast<int>(possibleMoves.size() - 1)};
-                gameState.performMove(possibleMoves[distribution1(randomDevice)]);
-            }
+            gameState.performMove(algorithm.iterativeDeepening(gameState));
+
+            gameState.gameOver[gameState.turn % COLOR_COUNT] = false;
+            std::vector<Move> possibleMoves = gameState.getPossibleMoves();
+            Move move = possibleMoves[std::uniform_int_distribution<int>(0, possibleMoves.size() - 1)(randomDevice)];
+            gameState.performMove(move);
         }
 
         std::pair<int, int> result;
@@ -54,25 +54,22 @@ void worker(std::queue<int> *runQueue, std::queue<std::pair<int, int>> *resultQu
             (team == 0 ? result.first : result.second) = points;
         }
 
-        resultQueue->push(result);
+        results->push(result);
     }
 }
 
 int main() {
-    std::queue<int> runQueue;
-    std::queue<std::pair<int, int>> resultQueue;
+    std::queue<bool> counter;
+    std::queue<std::pair<int, int>> results;
 
     for (int i = 0; i < GAME_COUNT; ++i) {
-        runQueue.push(i);
+        counter.push(true);
     }
 
-    unsigned int threadCount = std::thread::hardware_concurrency();
-    std::cout << std::to_string(threadCount) << " threads" << std::endl;
-
-    std::thread threads[threadCount];
+    std::thread threads[THREADS];
 
     for (std::thread &thread : threads) {
-        thread = std::thread(worker, &runQueue, &resultQueue);
+        thread = std::thread(worker, &counter, &results);
     }
 
     for (std::thread &thread : threads) {
@@ -81,10 +78,10 @@ int main() {
 
     double avgA = 0, avgB = 0;
 
-    while (!resultQueue.empty()) {
-        avgA += resultQueue.front().first;
-        avgB += resultQueue.front().second;
-        resultQueue.pop();
+    while (!results.empty()) {
+        avgA += results.front().first;
+        avgB += results.front().second;
+        results.pop();
     }
 
     avgA /= GAME_COUNT;
