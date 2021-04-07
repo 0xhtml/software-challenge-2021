@@ -20,8 +20,8 @@ private:
 
     int alphaBeta(GameState &gameState, int depth, int alpha, int beta);
 
+public:
     Move alphaBetaRoot(GameState &gameState, int depth, int alpha, int beta);
 
-public:
     Move iterativeDeepening(GameState &gameState);
 };
