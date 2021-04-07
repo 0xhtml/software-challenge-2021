@@ -3,10 +3,7 @@
 mkdir -p cmake
 cd cmake
 
-if [ ! -f CMakeLists.txt.sha1 ] || ! sha1sum -c CMakeLists.txt.sha1; then
-    cmake ..
-    sha1sum ../CMakeLists.txt > CMakeLists.txt.sha1
-fi
+cmake ..
 
 if [ -z "$1" ]; then
     TARGET="main"
