@@ -27,26 +27,9 @@ constexpr U8 PIECES[PIECE_COUNT][ROTATION_COUNT][FLIPPED_COUNT][PIECE_SIZE] = {
     {{{0b1110, 0b11}, {0b111, 0b1100}}, {{0b1, 0b11, 0b10, 0b10}, {0b10, 0b11, 0b1, 0b1}}, {{0b1100, 0b111}, {0b11, 0b1110}}, {{0b1, 0b1, 0b11, 0b10}, {0b10, 0b10, 0b11, 0b1}}}
 };
 
-constexpr U8 PIECE_BOUNDS[PIECE_COUNT][2] = {
-    {0, 0},
-    {0, 1},
-    {1, 1},
-    {2, 0},
-    {3, 0},
-    {2, 1},
-    {1, 1},
-    {1, 2},
-    {1, 2},
-    {4, 0},
-    {1, 2},
-    {3, 1},
-    {2, 2},
-    {2, 1},
-    {2, 2},
-    {2, 2},
-    {2, 2},
-    {2, 2},
-    {3, 1},
-    {2, 2},
-    {1, 3}
+class Pieces {
+public:
+    U8 pieceBounds[PIECE_COUNT][2]{};
+
+    Pieces();
 };

@@ -4,10 +4,12 @@
 #include "Constants.h"
 #include "Hash.h"
 #include "Types.h"
+#include "Pieces.h"
 
 class GameState {
 private:
     Hash hash{};
+    Pieces pieces{};
 public:
     U8 firstPiece = 0;
     unsigned int turn = 0;
