@@ -5,21 +5,22 @@
 #include "../src/GameState.h"
 
 #define SETUP_RANDOM_DISTRIBUTIONS() \
-    std::random_device randomDevice; \
-    std::uniform_int_distribution<int> firstPieceDistribution{0, 15}; \
-    std::uniform_int_distribution<int> turnDistribution{4, 40}
+    std::mt19937 mt19937(std::random_device{}()); \
+    std::uniform_int_distribution<> firstPieceDistribution{0, 15}; \
+    std::uniform_int_distribution<> turnDistribution{4, 40}
 
 #define GAMELOOP \
     GameState gameState{}; \
-    gameState.firstPiece = firstPieceDistribution(randomDevice); \
+    gameState.firstPiece = firstPieceDistribution(mt19937); \
     Algorithm algorithm{}; \
-    const int turns = turnDistribution(randomDevice); \
+    const int turns = turnDistribution(mt19937); \
     while (gameState.turn < turns)
 
 #define GAMELOOP_RANDOM_MOVE() \
     gameState.gameOver[gameState.turn % COLOR_COUNT] = false; \
     std::vector<Move> moves = gameState.getPossibleMoves(); \
-    gameState.performMove(moves[std::uniform_int_distribution<int>(0, moves.size() - 1)(randomDevice)])
+    std::uniform_int_distribution<> disribution(0, moves.size() - 1); \
+    gameState.performMove(moves[disribution(mt19937)])
 
 #define GAMELOOP_ALGORITHM_MOVE() \
     gameState.gameOver[gameState.turn % COLOR_COUNT] = false; \

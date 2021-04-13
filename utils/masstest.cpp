@@ -9,14 +9,14 @@
 #define THREADS 8
 
 void worker(std::queue<bool> *counter, std::queue<std::pair<int, int>> *results) {
-    std::random_device randomDevice;
-    std::uniform_int_distribution<int> distribution(0, 15);
+    std::mt19937 mt19937{std::random_device{}()};
+    std::uniform_int_distribution<> firstPieceDistribution(0, 15);
 
     while (!counter->empty()) {
         counter->pop();
 
         GameState gameState{};
-        gameState.firstPiece = distribution(randomDevice);
+        gameState.firstPiece = firstPieceDistribution(mt19937);
 
         Algorithm algorithm{};
 
@@ -26,7 +26,7 @@ void worker(std::queue<bool> *counter, std::queue<std::pair<int, int>> *results)
 
             gameState.gameOver[gameState.turn % COLOR_COUNT] = false;
             std::vector<Move> possibleMoves = gameState.getPossibleMoves();
-            Move move = possibleMoves[std::uniform_int_distribution<int>(0, possibleMoves.size() - 1)(randomDevice)];
+            Move move = possibleMoves[std::uniform_int_distribution<>(0, possibleMoves.size() - 1)(mt19937)];
             gameState.performMove(move);
         }
 
