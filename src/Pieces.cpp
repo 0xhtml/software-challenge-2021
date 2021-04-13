@@ -17,7 +17,7 @@ Pieces::Pieces() {
             }
         }
 
-        pieceBounds[piece][0] = x - 1;
-        pieceBounds[piece][1] = y - 1;
+        bounds[piece][0] = x - 1;
+        bounds[piece][1] = y - 1;
     }
 }

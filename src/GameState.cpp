@@ -34,10 +34,10 @@ std::vector<Move> GameState::getPossibleMoves() {
                     U8 yo = 0;
 
                     if (x) {
-                        xo = pieces.pieceBounds[firstPiece][rotation % 2 ? 1 : 0];
+                        xo = pieces.bounds[firstPiece][rotation % 2 ? 1 : 0];
                     }
                     if (y) {
-                        yo = pieces.pieceBounds[firstPiece][rotation % 2 ? 0 : 1];
+                        yo = pieces.bounds[firstPiece][rotation % 2 ? 0 : 1];
                     }
 
                     U8 moveX = x - xo;
@@ -61,8 +61,8 @@ std::vector<Move> GameState::getPossibleMoves() {
                 for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
                     if (PIECES[piece][rotation][flipped][0] == 0) continue;
 
-                    U8 pieceBoundsX = pieces.pieceBounds[piece][rotation % 2 ? 1 : 0];
-                    U8 pieceBoundsY = pieces.pieceBounds[piece][rotation % 2 ? 0 : 1];
+                    U8 pieceBoundsX = pieces.bounds[piece][rotation % 2 ? 1 : 0];
+                    U8 pieceBoundsY = pieces.bounds[piece][rotation % 2 ? 0 : 1];
 
                     for (U8 x = 0; x < BOARD_SIZE - pieceBoundsX; ++x) {
                         for (U8 y = 0; y < BOARD_SIZE - pieceBoundsY; ++y) {
@@ -107,7 +107,7 @@ std::vector<Move> GameState::getPossibleMoves() {
 
 void GameState::performMove(const Move &move) {
     if (move.color < COLOR_COUNT) {
-        for (int i = 0; i <= pieces.pieceBounds[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
+        for (int i = 0; i <= pieces.bounds[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
             int x = move.x + i;
 
@@ -128,7 +128,7 @@ void GameState::performMove(const Move &move) {
 void GameState::undoMove(const Move &move) {
     if (move.color < COLOR_COUNT) {
         int x;
-        for (int i = 0; i <= pieces.pieceBounds[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
+        for (int i = 0; i <= pieces.bounds[move.piece][move.rotation % 2 ? 1 : 0]; ++i) {
             U32 shiftedPiece = PIECES[move.piece][move.rotation][move.flipped][i] << move.y;
             x = move.x + i;
 

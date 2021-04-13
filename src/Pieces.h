@@ -29,7 +29,7 @@ constexpr U8 PIECES[PIECE_COUNT][ROTATION_COUNT][FLIPPED_COUNT][PIECE_SIZE] = {
 
 class Pieces {
 public:
-    U8 pieceBounds[PIECE_COUNT][2]{};
+    U8 bounds[PIECE_COUNT][2]{};
 
     Pieces();
 };
