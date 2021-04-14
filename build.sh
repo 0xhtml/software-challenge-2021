@@ -1,10 +1,5 @@
 #!/bin/sh
 
-mkdir -p cmake
-cd cmake
-
-cmake ..
-
 if [ -z "$1" ]; then
     TARGET="main"
 else
@@ -12,9 +7,18 @@ else
 fi
 
 if [ -z "$2" ]; then
-    CONFIG="Release"
+    BUILD_TYPE="release"
 else
-    CONFIG=$2
+    BUILD_TYPE=$2
 fi
 
-cmake --build . --config $CONFIG --target $TARGET
+if [ -z "$3" ]; then
+    DIR="cmake-$BUILD_TYPE"
+else
+    DIR="cmake-$3"
+fi
+
+mkdir -p $DIR &&
+cd $DIR &&
+cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE .. &&
+cmake --build . --target $TARGET

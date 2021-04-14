@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
-project(software_challenge_2021)
+project(software-challenge-2021)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -flto -march=native")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG -flto -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Ofast -flto -march=native")
 
 add_executable(main src/main.cpp src/Algorithm.cpp src/Evaluation.cpp src/GameState.cpp src/Hash.cpp src/Network.cpp src/Pieces.cpp)
 add_subdirectory(pugixml)
