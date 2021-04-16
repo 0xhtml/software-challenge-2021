@@ -26,6 +26,8 @@
     gameState.gameOver[gameState.turn % COLOR_COUNT] = false; \
     gameState.performMove(algorithm.alphaBetaRoot(gameState, 1, -1000, 1000))
 
+#define BENCHMARK_MS(f) BENCHMARK(f)->Unit(benchmark::kMillisecond)
+
 static void BM_GameState_getPossibleMoves(benchmark::State &state) {
     SETUP_RANDOM_DISTRIBUTIONS();
 
@@ -39,7 +41,7 @@ static void BM_GameState_getPossibleMoves(benchmark::State &state) {
         gameState.getPossibleMoves();
     }
 }
-BENCHMARK(BM_GameState_getPossibleMoves)->Unit(benchmark::kMillisecond);
+BENCHMARK_MS(BM_GameState_getPossibleMoves);
 
 static void BM_Algorithm_alphaBeta(benchmark::State &state) {
     SETUP_RANDOM_DISTRIBUTIONS();
@@ -57,6 +59,6 @@ static void BM_Algorithm_alphaBeta(benchmark::State &state) {
         }
     }
 }
-BENCHMARK(BM_Algorithm_alphaBeta)->Threads(8)->Unit(benchmark::kMillisecond);
+BENCHMARK_MS(BM_Algorithm_alphaBeta)->Threads(8);
 
 BENCHMARK_MAIN();
