@@ -4,6 +4,7 @@
 #define BOARD_MAX (BOARD_SIZE - 1)
 
 #define PIECE_SIZE 5
+#define PIECE_MAX (PIECE_SIZE - 1)
 #define PIECE_COUNT 21
 
 #define TEAM_COUNT 2

@@ -54,39 +54,52 @@ std::vector<Move> GameState::getPossibleMoves() {
             }
         }
     } else if (!gameOver[color]) {
-        for (U8 piece = 0; piece < PIECE_COUNT; ++piece) {
-            if (deployedPieces[color][piece]) continue;
+        for (U8 x = 0; x < BOARD_SIZE; ++x) {
+            U32 corners = (horizontalNeighbours[color][x] << 1 | horizontalNeighbours[color][x] >> 1);
+            corners &= ~(board[0][x] | horizontalNeighbours[color][x] | verticalNeighbours[color][x]);
 
-            for (U8 rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
-                for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
-                    if (PIECES[piece][rotation][flipped][0] == 0) continue;
+            for (U8 y = 0; y < BOARD_SIZE; ++y) {
+                if (!(corners & 1 << y)) continue;
 
-                    U8 pieceBoundsX = pieces.bounds[piece][rotation % 2 ? 1 : 0];
-                    U8 pieceBoundsY = pieces.bounds[piece][rotation % 2 ? 0 : 1];
+                for (U8 piece = 0; piece < PIECE_COUNT; ++piece) {
+                    if (deployedPieces[color][piece]) continue;
 
-                    for (U8 x = 0; x < BOARD_SIZE - pieceBoundsX; ++x) {
-                        for (U8 y = 0; y < BOARD_SIZE - pieceBoundsY; ++y) {
-                            bool valid = true;
-                            bool diagonal = false;
+                    for (U8 rotation = 0; rotation < ROTATION_COUNT; ++rotation) {
+                        U8 pieceBoundsX = pieces.bounds[piece][rotation % 2 ? 1 : 0];
+                        U8 pieceBoundsY = pieces.bounds[piece][rotation % 2 ? 0 : 1];
 
-                            for (int i = 0; i <= pieceBoundsX; ++i) {
-                                U32 shiftedPiece = PIECES[piece][rotation][flipped][i] << y;
+                        for (U8 flipped = 0; flipped < FLIPPED_COUNT; ++flipped) {
+                            if (PIECES[piece][rotation][flipped][0] == 0) break;
 
-                                if (shiftedPiece & board[0][x + i] ||
-                                    shiftedPiece & horizontalNeighbours[color][x + i] ||
-                                    shiftedPiece & verticalNeighbours[color][x + i]) {
-                                    valid = false;
-                                    break;
+                            for (int corner = 0; corner < pieces.cornerCount[piece]; ++corner) {
+                                U8 pieceX = pieces.corners[piece][rotation][flipped][corner][0];
+                                if (pieceX > x) continue;
+
+                                U8 pieceY = pieces.corners[piece][rotation][flipped][corner][1];
+                                if (pieceY > y) continue;
+
+                                pieceX = x - pieceX;
+                                if (pieceX > BOARD_MAX - pieceBoundsX) continue;
+
+                                pieceY = y - pieceY;
+                                if (pieceY > BOARD_MAX - pieceBoundsY) continue;
+
+                                bool valid = true;
+
+                                for (int i = 0; i <= pieceBoundsX; ++i) {
+                                    U32 shiftedPiece = PIECES[piece][rotation][flipped][i] << pieceY;
+
+                                    if (shiftedPiece & board[0][pieceX + i] ||
+                                        shiftedPiece & horizontalNeighbours[color][pieceX + i] ||
+                                        shiftedPiece & verticalNeighbours[color][pieceX + i]) {
+                                        valid = false;
+                                        break;
+                                    }
                                 }
 
-                                if (!diagonal && (shiftedPiece << 1 & horizontalNeighbours[color][x + i] ||
-                                                  shiftedPiece >> 1 & horizontalNeighbours[color][x + i])) {
-                                    diagonal = true;
+                                if (valid) {
+                                    possibleMoves.push_back({color, piece, rotation, flipped, pieceX, pieceY});
                                 }
-                            }
-
-                            if (valid && diagonal) {
-                                possibleMoves.push_back({color, piece, rotation, flipped, x, y});
                             }
                         }
                     }
