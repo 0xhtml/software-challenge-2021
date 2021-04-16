@@ -11,10 +11,10 @@ private:
 
     int evaluateDistanceToMiddle(const GameState &gameState, int color) const;
 
-    void evaluateFields(const GameState &gameState, int color, int &value) const;
+    void evaluatePieceSize(const GameState &gameState, int color, int &value) const;
 
 public:
-    int pieceEvaluation[PIECE_COUNT]{};
+    int pieceSize[PIECE_COUNT]{};
 
     Evaluation();
 

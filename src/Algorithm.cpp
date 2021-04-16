@@ -19,7 +19,7 @@ std::vector<Move> Algorithm::sortedPossibleMoves(GameState &gameState) const {
     std::vector<Move> possibleMoves = gameState.getPossibleMoves();
     std::sort(possibleMoves.begin(), possibleMoves.end(), [this](Move a, Move b) {
         if (a.piece != b.piece) {
-            int diff = evaluation.pieceEvaluation[a.piece] - evaluation.pieceEvaluation[b.piece];
+            int diff = evaluation.pieceSize[a.piece] - evaluation.pieceSize[b.piece];
             if (diff != 0) return diff > 0;
         }
         return history[a.piece][a.rotation][a.flipped][a.x][a.y] > history[b.piece][b.rotation][b.flipped][b.x][b.y];

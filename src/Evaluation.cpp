@@ -3,11 +3,10 @@
 #include "Pieces.h"
 
 Evaluation::Evaluation() {
-    pieceEvaluation[0] = -15;
-    for (int piece = 1; piece < PIECE_COUNT; ++piece) {
+    for (int piece = 0; piece < PIECE_COUNT; ++piece) {
         for (int x = 0; x < PIECE_SIZE; ++x) {
             if (PIECES[piece][0][0][x] == 0) break;
-            pieceEvaluation[piece] += __builtin_popcount(PIECES[piece][0][0][x]);
+            pieceSize[piece] += __builtin_popcount(PIECES[piece][0][0][x]);
         }
     }
 
@@ -29,10 +28,10 @@ int Evaluation::evaluateDistanceToMiddle(const GameState &gameState, const int c
     return -BOARD_SIZE;
 }
 
-void Evaluation::evaluateFields(const GameState &gameState, const int color, int &value) const {
-    for (int piece = 0; piece < PIECE_SIZE; ++piece) {
+void Evaluation::evaluatePieceSize(const GameState &gameState, const int color, int &value) const {
+    for (int piece = 0; piece < PIECE_COUNT; ++piece) {
         if (gameState.deployedPieces[color][piece]) {
-            value += pieceEvaluation[piece];
+            value += pieceSize[piece];
         }
     }
 }
@@ -120,8 +119,8 @@ int Evaluation::evaluate(const GameState &gameState) const {
             teamValue += evaluateDistanceToMiddle(gameState, team + 2);
         } else {
             evaluateSpace(gameState, team, teamValue);
-            evaluateFields(gameState, team, teamValue);
-            evaluateFields(gameState, team + 2, teamValue);
+            evaluatePieceSize(gameState, team, teamValue);
+            evaluatePieceSize(gameState, team + 2, teamValue);
         }
 
         if (gameState.turn % 2 == team) {
