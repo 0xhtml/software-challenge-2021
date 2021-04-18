@@ -108,7 +108,7 @@ TEST_CASE("performMove and undoMove") {
     checkGameState(gameState);
 }
 
-TEST_CASE("whole game") {
+TEST_CASE("whole game", "[.]") {
     for (int piece = 0; piece < 16; ++piece) {
         GameState gameState{};
         gameState.firstPiece = piece;

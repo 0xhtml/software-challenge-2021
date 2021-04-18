@@ -11,7 +11,7 @@ add_subdirectory(pugixml)
 target_link_libraries(main pugixml)
 target_link_libraries(main pthread)
 
-add_executable(tests tests/tests.cpp tests/test-GameState.cpp src/GameState.cpp src/Hash.cpp src/Pieces.cpp)
+add_executable(tests tests/tests.cpp tests/test-GameState.cpp tests/test-Pieces.cpp src/GameState.cpp src/Hash.cpp src/Pieces.cpp)
 target_compile_definitions(tests PUBLIC NO_OUTPUT)
 
 add_executable(masstest utils/masstest.cpp src/Algorithm.cpp src/Evaluation.cpp src/GameState.cpp src/Hash.cpp src/Pieces.cpp)
