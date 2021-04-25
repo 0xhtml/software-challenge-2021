@@ -116,13 +116,6 @@ void Network::parseGameState(const pugi::xml_node &xmlGameState) {
         gameState.performMove(parseMove(xmlMove));
     }
 
-    for (bool &gameOver : gameState.gameOver) {
-        gameOver = true;
-    }
-    for (pugi::xml_node xmlColor : xmlGameState.child("validColors").children("color")) {
-        gameState.gameOver[STR_INDEX(COLOR_NAMES, xmlColor.text().get())] = false;
-    }
-
     // Set turn manually to account for skip moves
     gameState.turn = xmlGameState.attribute("turn").as_int();
 }

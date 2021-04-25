@@ -107,21 +107,3 @@ TEST_CASE("performMove and undoMove") {
     REQUIRE(gameState.turn == 4);
     checkGameState(gameState);
 }
-
-TEST_CASE("whole game", "[.]") {
-    for (int piece = 0; piece < 16; ++piece) {
-        GameState gameState{};
-        gameState.firstPiece = piece;
-
-        while (!gameState.gameOver[0]) {
-            std::vector<Move> possibleMoves = gameState.getPossibleMoves();
-
-            gameState.performMove(possibleMoves[3 % possibleMoves.size()]);
-            gameState.undoMove(possibleMoves[3 % possibleMoves.size()]);
-            gameState.performMove(possibleMoves[7 % possibleMoves.size()]);
-        }
-
-        REQUIRE(gameState.turn > 10);
-        checkGameState(gameState);
-    }
-}

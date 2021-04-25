@@ -7,7 +7,7 @@ U32 GameState::getValidFields(const int color, const int x) const {
     return corners;
 }
 
-std::vector<Move> GameState::getPossibleMoves() {
+std::vector<Move> GameState::getPossibleMoves() const {
     std::vector<Move> possibleMoves;
     U8 color = turn % COLOR_COUNT;
 
@@ -59,7 +59,7 @@ std::vector<Move> GameState::getPossibleMoves() {
                 return possibleMoves;
             }
         }
-    } else if (!gameOver[color]) {
+    } else {
         for (U8 x = 0; x < BOARD_SIZE; ++x) {
             U32 corners = getValidFields(color, x);
 
@@ -112,12 +112,7 @@ std::vector<Move> GameState::getPossibleMoves() {
             }
         }
 
-        if (possibleMoves.empty()) {
-            possibleMoves.push_back({5});
-            gameOver[color] = true;
-        }
-    } else {
-        possibleMoves.push_back({5});
+        if (possibleMoves.empty()) possibleMoves.push_back({5});
     }
 
     return possibleMoves;
@@ -176,7 +171,6 @@ void GameState::undoMove(const Move &move) {
 
         boardHash ^= hash.hash(move);
         deployedPieces[move.color][move.piece] = false;
-        gameOver[move.color] = false;
     }
     turn--;
 }

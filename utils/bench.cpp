@@ -17,13 +17,11 @@
     while (gameState.turn < turns)
 
 #define GAMELOOP_RANDOM_MOVE() \
-    gameState.gameOver[gameState.turn % COLOR_COUNT] = false; \
     std::vector<Move> moves = gameState.getPossibleMoves(); \
     std::uniform_int_distribution<> disribution(0, moves.size() - 1); \
     gameState.performMove(moves[disribution(mt19937)])
 
 #define GAMELOOP_ALGORITHM_MOVE() \
-    gameState.gameOver[gameState.turn % COLOR_COUNT] = false; \
     gameState.performMove(algorithm.alphaBetaRoot(gameState, 1, -1000, 1000))
 
 #define BENCHMARK_MS(f) BENCHMARK(f)->Unit(benchmark::kMillisecond)

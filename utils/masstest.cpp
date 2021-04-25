@@ -21,10 +21,8 @@ void worker(std::queue<bool> *counter, std::queue<std::pair<int, int>> *results)
         Algorithm algorithm{};
 
         for (int i = 0; i < TEAM_COUNT * PIECE_COUNT; ++i) {
-            gameState.gameOver[gameState.turn % COLOR_COUNT] = false;
             gameState.performMove(algorithm.iterativeDeepening(gameState));
 
-            gameState.gameOver[gameState.turn % COLOR_COUNT] = false;
             std::vector<Move> possibleMoves = gameState.getPossibleMoves();
             Move move = possibleMoves[std::uniform_int_distribution<>(0, possibleMoves.size() - 1)(mt19937)];
             gameState.performMove(move);
