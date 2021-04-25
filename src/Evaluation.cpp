@@ -20,7 +20,7 @@ Evaluation::Evaluation() {
 
 int Evaluation::distanceToMiddle(const GameState &gameState, const int color) const {
     for (PositionValuePair positionValuePair : positionsSortedByDistanceToMiddle) {
-        if (gameState.board[color + 1][positionValuePair.x] & 1 << positionValuePair.y) {
+        if (gameState.board[color][positionValuePair.x] & 1 << positionValuePair.y) {
             return positionValuePair.value;
         }
     }
@@ -28,8 +28,8 @@ int Evaluation::distanceToMiddle(const GameState &gameState, const int color) co
 }
 
 int Evaluation::getSide(const GameState &gameState, const int team) const {
-    U32 first = gameState.board[team + 1][0] | gameState.board[team + 3][0];
-    U32 last = gameState.board[team + 1][BOARD_MAX] | gameState.board[team + 3][BOARD_MAX];
+    U32 first = gameState.board[team][0] | gameState.board[team + 2][0];
+    U32 last = gameState.board[team][BOARD_MAX] | gameState.board[team + 2][BOARD_MAX];
 
     if (first & 1) {
         if (first & 1 << BOARD_MAX) return 0;
@@ -65,9 +65,9 @@ void Evaluation::evaluateSpace(const GameState &gameState, const int team, int &
                 mask = 0xFFFFF << (x < BOARD_MAX / 2 ? BOARD_MAX - x : x);
         }
 
-        value -= __builtin_popcount(gameState.board[0][x] & mask);
-        value -= __builtin_popcount(gameState.board[team + 2][x] & mask);
-        value -= __builtin_popcount(gameState.board[(team + 3 % COLOR_COUNT) + 1][x] & mask);
+        value -= __builtin_popcount(gameState.boardOR[x] & mask);
+        value -= __builtin_popcount(gameState.board[team + 1][x] & mask);
+        value -= __builtin_popcount(gameState.board[(team + 3) % COLOR_COUNT][x] & mask);
 
         U32 validFields = gameState.getValidFields(team + 1, x);
         validFields |= gameState.getValidFields((team + 3) % COLOR_COUNT, x);

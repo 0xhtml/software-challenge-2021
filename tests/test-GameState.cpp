@@ -75,18 +75,18 @@ void checkGameState(const GameState &gameState) {
         U32 board = 0;
 
         for (int color = 0; color < COLOR_COUNT; ++color) {
-            U32 verticalNeighbours = gameState.board[color + 1][x] << 1 | gameState.board[color + 1][x] >> 1;
+            U32 verticalNeighbours = gameState.board[color][x] << 1 | gameState.board[color][x] >> 1;
             REQUIRE(gameState.verticalNeighbours[color][x] == verticalNeighbours);
 
             U32 horizontalNeighbours = 0;
-            if (x > 0) horizontalNeighbours |= gameState.board[color + 1][x - 1];
-            if (x < BOARD_MAX) horizontalNeighbours |= gameState.board[color + 1][x + 1];
+            if (x > 0) horizontalNeighbours |= gameState.board[color][x - 1];
+            if (x < BOARD_MAX) horizontalNeighbours |= gameState.board[color][x + 1];
             REQUIRE(gameState.horizontalNeighbours[color][x] == horizontalNeighbours);
 
-            board |= gameState.board[color + 1][x];
+            board |= gameState.board[color][x];
         }
 
-        REQUIRE(gameState.board[0][x] == board);
+        REQUIRE(gameState.boardOR[x] == board);
     }
 }
 

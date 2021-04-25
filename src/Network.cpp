@@ -211,7 +211,7 @@ void Network::close() {
 
     std::cout << std::endl;
     for (int i = 0; i < COLOR_COUNT; ++i) {
-        for (U32 row : gameState.board[i + 1]) {
+        for (U32 row : gameState.board[i]) {
             printf("%05x ", row);
         }
         std::cout << std::endl;
