@@ -5,7 +5,6 @@
 Evaluation::Evaluation() {
     for (int piece = 0; piece < PIECE_COUNT; ++piece) {
         for (int x = 0; x < PIECE_SIZE; ++x) {
-            if (PIECES[piece][0][0][x] == 0) break;
             pieceSize[piece] += __builtin_popcount(PIECES[piece][0][0][x]);
         }
     }
@@ -19,7 +18,7 @@ Evaluation::Evaluation() {
               [](PositionValuePair a, PositionValuePair b) { return a.value > b.value; });
 }
 
-int Evaluation::evaluateDistanceToMiddle(const GameState &gameState, const int color) const {
+int Evaluation::distanceToMiddle(const GameState &gameState, const int color) const {
     for (PositionValuePair positionValuePair : positionsSortedByDistanceToMiddle) {
         if (gameState.board[color + 1][positionValuePair.x] & 1 << positionValuePair.y) {
             return positionValuePair.value;
@@ -28,105 +27,87 @@ int Evaluation::evaluateDistanceToMiddle(const GameState &gameState, const int c
     return -BOARD_SIZE;
 }
 
-void Evaluation::evaluatePieceSize(const GameState &gameState, const int color, int &value) const {
-    for (int piece = 0; piece < PIECE_COUNT; ++piece) {
-        if (gameState.deployedPieces[color][piece]) {
-            value += pieceSize[piece];
-        }
+int Evaluation::getSide(const GameState &gameState, const int team) const {
+    U32 first = gameState.board[team + 1][0] | gameState.board[team + 3][0];
+    U32 last = gameState.board[team + 1][BOARD_MAX] | gameState.board[team + 3][BOARD_MAX];
+
+    if (first & 1) {
+        if (first & 1 << BOARD_MAX) return 0;
+        if (last & 1) return 1;
     }
+
+    if (last & 1 << BOARD_MAX) {
+        if (last & 1) return 2;
+        if (first & 1 << BOARD_MAX) return 3;
+    }
+
+    return -1;
 }
 
-void evaluateSpace(const GameState &gameState, const int team, int &value) {
-    int corners[2][2], i = 0, side;
-
-    for (int x : {0, BOARD_MAX}) {
-        for (int y : {0, BOARD_MAX}) {
-            if ((gameState.board[team + 1][x] | gameState.board[team + 3][x]) & 1 << y) {
-                corners[i % 2][0] = x;
-                corners[i % 2][1] = y;
-                i++;
-            }
-        }
-    }
-
-    if (i < 2) {
-        return;
-    }
-
-    if (corners[0][0] == 0 && corners[0][1] == 0) {
-        if (corners[1][0] == 0) {
-            side = 0;
-        } else if (corners[1][1] == 0) {
-            side = 1;
-        } else {
-            return;
-        }
-    } else if (corners[1][0] == BOARD_MAX && corners[1][1] == BOARD_MAX) {
-        if (corners[0][0] == BOARD_MAX) {
-            side = 2;
-        } else if (corners[0][1] == BOARD_MAX) {
-            side = 3;
-        } else {
-            return;
-        }
-    } else {
-        return;
-    }
+void Evaluation::evaluateSpace(const GameState &gameState, const int team, int &value) const {
+    int side = getSide(gameState, team);
+    if (side == -1) return;
 
     for (int x = side == 1 ? BOARD_SIZE / 2 : 0; x < (side == 0 ? BOARD_SIZE / 2 : BOARD_SIZE); ++x) {
-        U32 mask = 0b11111111111111111111;
+        U32 mask;
+
         switch (side) {
             case 0:
-                mask = mask << x & mask >> x;
+                mask = 0xFFFFF << x & 0xFFFFF >> x;
                 break;
             case 1:
-                mask >>= x < BOARD_SIZE / 2 ? BOARD_MAX - x : x;
+                mask = 0xFFFFF >> (x < BOARD_MAX / 2 ? BOARD_MAX - x : x);
                 break;
             case 2:
-                mask = mask << (BOARD_MAX - x) & mask >> (BOARD_MAX - x);
+                mask = 0xFFFFF << (BOARD_MAX - x) & 0xFFFFF >> (BOARD_MAX - x);
                 break;
             case 3:
-                mask <<= x < BOARD_SIZE / 2 ? BOARD_MAX - x : x;
-                break;
+                mask = 0xFFFFF << (x < BOARD_MAX / 2 ? BOARD_MAX - x : x);
         }
-        value -= __builtin_popcount(gameState.board[0][x] & mask);
 
-        U32 validFields = 0;
-        for (int color : {team + 1, (team + 3) % COLOR_COUNT}) {
-            U32 colorValidFields = ~(gameState.board[0][x] | gameState.horizontalNeighbours[color][x] |
-                                     gameState.verticalNeighbours[color][x]);
-            U32 validFieldsMask = 0;
-            if (x < BOARD_MAX) {
-                validFieldsMask |= gameState.verticalNeighbours[color][x + 1];
-            }
-            if (x > 0) {
-                validFieldsMask |= gameState.verticalNeighbours[color][x - 1];
-            }
-            validFields |= colorValidFields & validFieldsMask;
-        }
-        value -= __builtin_popcount(validFields & mask) * 7;
+        value -= __builtin_popcount(gameState.board[0][x] & mask);
+        value -= __builtin_popcount(gameState.board[team + 2][x] & mask);
+        value -= __builtin_popcount(gameState.board[(team + 3 % COLOR_COUNT) + 1][x] & mask);
+
+        U32 validFields = gameState.getValidFields(team + 1, x);
+        validFields |= gameState.getValidFields((team + 3) % COLOR_COUNT, x);
+        value -= __builtin_popcount(validFields & mask) * 5;
     }
 }
 
 int Evaluation::evaluate(const GameState &gameState) const {
     int value = 0;
 
-    for (int team = 0; team < TEAM_COUNT; ++team) {
-        int teamValue = 0;
+    for (int color = 0; color < COLOR_COUNT; ++color) {
+        int colorValue = 0;
 
-        if (gameState.turn < 4 * COLOR_COUNT) {
-            teamValue += evaluateDistanceToMiddle(gameState, team);
-            teamValue += evaluateDistanceToMiddle(gameState, team + 2);
+        if (gameState.turn < 15) {
+            colorValue += distanceToMiddle(gameState, color);
+
+            if (gameState.deployedPieces[color][12]) ++colorValue;
+            if (gameState.deployedPieces[color][14]) ++colorValue;
+            if (gameState.deployedPieces[color][15]) ++colorValue;
         } else {
-            evaluateSpace(gameState, team, teamValue);
-            evaluatePieceSize(gameState, team, teamValue);
-            evaluatePieceSize(gameState, team + 2, teamValue);
+            if (color < TEAM_COUNT) {
+                evaluateSpace(gameState, color, colorValue);
+            }
+
+            for (int piece = 0; piece < PIECE_COUNT; ++piece) {
+                if (gameState.deployedPieces[color][piece]) {
+                    colorValue += pieceSize[piece] * 4;
+                }
+            }
+
+            if (gameState.deployedPieces[color][14]) ++colorValue;
+            if (gameState.deployedPieces[color][15]) ++colorValue;
+            if (gameState.deployedPieces[color][16]) ++colorValue;
+            if (gameState.deployedPieces[color][17]) ++colorValue;
         }
 
-        if (gameState.turn % 2 == team) {
-            value += teamValue;
+        if (gameState.turn % 2 == color % 2) {
+            value += colorValue;
         } else {
-            value -= teamValue;
+            value -= colorValue;
         }
     }
 

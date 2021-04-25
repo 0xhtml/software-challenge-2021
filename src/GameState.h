@@ -20,6 +20,8 @@ public:
     bool deployedPieces[COLOR_COUNT][PIECE_COUNT]{};
     bool gameOver[COLOR_COUNT]{};
 
+    U32 getValidFields(const int color, const int x) const;
+
     std::vector<Move> getPossibleMoves();
 
     void performMove(const Move &move);

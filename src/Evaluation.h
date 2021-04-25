@@ -9,9 +9,11 @@ class Evaluation {
 private:
     std::vector<PositionValuePair> positionsSortedByDistanceToMiddle{};
 
-    int evaluateDistanceToMiddle(const GameState &gameState, int color) const;
+    int distanceToMiddle(const GameState &gameState, const int color) const;
 
-    void evaluatePieceSize(const GameState &gameState, int color, int &value) const;
+    int getSide(const GameState &gameState, const int team) const;
+
+    void evaluateSpace(const GameState &gameState, const int team, int &value) const;
 
 public:
     int pieceSize[PIECE_COUNT]{};

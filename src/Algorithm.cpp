@@ -107,11 +107,17 @@ Move Algorithm::iterativeDeepening(GameState &gameState) {
     timeout = false;
 
     Move move{};
-    int depth;
 
-    for (depth = 1; !timeout && depth <= 20; ++depth) {
-        Move newMove = alphaBetaRoot(gameState, depth, -1000, 1000);
-        if (!timeout || depth == 1) move = newMove;
+    if (gameState.turn < 14) {
+        move = alphaBetaRoot(gameState, 1, -1000, 1000);
+        for (int depth = 15 - gameState.turn; !timeout; ++depth) {
+            alphaBetaRoot(gameState, depth, -1000, 1000);
+        }
+    } else {
+        for (int depth = 1; !timeout && depth <= 20; ++depth) {
+            Move newMove = alphaBetaRoot(gameState, depth, -1000, 1000);
+            if (!timeout || depth == 1) move = newMove;
+        }
     }
 
 #ifndef NO_OUTPUT

@@ -1,6 +1,12 @@
 #include "GameState.h"
 #include "Pieces.h"
 
+U32 GameState::getValidFields(const int color, const int x) const {
+    U32 corners = horizontalNeighbours[color][x] << 1 | horizontalNeighbours[color][x] >> 1;
+    corners &= ~(board[0][x] | horizontalNeighbours[color][x] | verticalNeighbours[color][x]);
+    return corners;
+}
+
 std::vector<Move> GameState::getPossibleMoves() {
     std::vector<Move> possibleMoves;
     U8 color = turn % COLOR_COUNT;
@@ -55,8 +61,7 @@ std::vector<Move> GameState::getPossibleMoves() {
         }
     } else if (!gameOver[color]) {
         for (U8 x = 0; x < BOARD_SIZE; ++x) {
-            U32 corners = (horizontalNeighbours[color][x] << 1 | horizontalNeighbours[color][x] >> 1);
-            corners &= ~(board[0][x] | horizontalNeighbours[color][x] | verticalNeighbours[color][x]);
+            U32 corners = getValidFields(color, x);
 
             for (U8 y = 0; y < BOARD_SIZE; ++y) {
                 if (!(corners & 1 << y)) continue;
