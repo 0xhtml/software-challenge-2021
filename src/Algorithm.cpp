@@ -4,10 +4,15 @@
 #include "Evaluation.h"
 #include "Pieces.h"
 
+Algorithm::Algorithm() {
+    transpositions.rehash(2700023);
+    transpositions.max_load_factor(-1);
+}
+
 bool Algorithm::checkTimeout() {
 #ifndef NO_TIMEOUT
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() >= 1700) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() >= 1950) {
         timeout = true;
         return true;
     }

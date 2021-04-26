@@ -10,7 +10,7 @@ class Algorithm {
 private:
     Evaluation evaluation{};
     std::chrono::time_point<std::chrono::system_clock> start;
-    std::unordered_map<U64, Transposition> transpositions{351061};
+    std::unordered_map<U64, Transposition> transpositions{};
     U64 history[PIECE_COUNT][ROTATION_COUNT][FLIPPED_COUNT][BOARD_SIZE][BOARD_SIZE]{};
     bool timeout;
 
@@ -21,6 +21,8 @@ private:
     int alphaBeta(GameState &gameState, int depth, int alpha, int beta);
 
 public:
+    Algorithm();
+
     Move alphaBetaRoot(GameState &gameState, int depth, int alpha, int beta);
 
     Move iterativeDeepening(GameState &gameState);
