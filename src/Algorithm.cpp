@@ -1,8 +1,12 @@
-#include <algorithm>
-#include <iostream>
 #include "Algorithm.h"
-#include "Evaluation.h"
-#include "Pieces.h"
+
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <vector>
+
+#include "GameState.h"
+#include "Types.h"
 
 Algorithm::Algorithm() {
     transpositions.rehash(2700023);
@@ -42,15 +46,15 @@ int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const
     if (iterator != transpositions.end()) {
         Transposition transposition = iterator->second;
         if (transposition.depth >= depth) {
-            if (transposition.bound == 0) return transposition.score;
-            if (transposition.bound == 1 && transposition.score <= alpha) return alpha;
-            if (transposition.bound == 2 && transposition.score >= beta) return beta;
+            if (transposition.type == EXACT) return transposition.score;
+            if (transposition.type == ALPHA && transposition.score <= alpha) return alpha;
+            if (transposition.type == BETA && transposition.score >= beta) return beta;
         }
     }
 
     if (depth <= 0) return evaluation.evaluate(gameState);
 
-    int bound = 1;
+    TranspositionType type = ALPHA;
 
     for (auto move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
@@ -60,18 +64,18 @@ int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const
         if (timeout) return 0;
 
         if (score >= beta) {
-            transpositions[hash] = {2, depth, beta};
+            transpositions[hash] = {BETA, depth, beta};
             ++history[move.piece][move.rotation][move.flipped][move.x][move.y];
             return beta;
         }
 
         if (score > alpha) {
             alpha = score;
-            bound = 0;
+            type = EXACT;
         }
     }
 
-    transpositions[hash] = {bound, depth, alpha};
+    transpositions[hash] = {type, depth, alpha};
 
     return alpha;
 }

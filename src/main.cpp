@@ -1,11 +1,15 @@
 #include <getopt.h>
+#include <string>
+
 #include "Network.h"
 
 int main(int argc, char **argv) {
+    // Default values
     std::string host = "localhost";
     int port = 13050;
     std::string reservation;
 
+    // Parse arguments
     while (true) {
         const auto opt = getopt_long(argc, argv, "h:p:r:", (const option[]) {
                 {"host",        required_argument, nullptr, 'h'},

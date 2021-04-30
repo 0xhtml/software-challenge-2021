@@ -1,4 +1,5 @@
 #include "Pieces.h"
+
 #include "Constants.h"
 #include "Types.h"
 

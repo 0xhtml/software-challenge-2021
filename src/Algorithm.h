@@ -2,9 +2,22 @@
 
 #include <chrono>
 #include <unordered_map>
+#include <vector>
+
+#include "Constants.h"
 #include "Evaluation.h"
 #include "GameState.h"
 #include "Types.h"
+
+enum TranspositionType {
+    EXACT, ALPHA, BETA
+};
+
+struct Transposition {
+    TranspositionType type;
+    int depth;
+    int score;
+};
 
 class Algorithm {
 private:

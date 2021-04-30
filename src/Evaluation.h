@@ -1,9 +1,15 @@
 #pragma once
 
 #include <vector>
+
 #include "Constants.h"
-#include "Types.h"
 #include "GameState.h"
+#include "Types.h"
+
+struct PositionValuePair {
+    U8 x, y;
+    int value;
+};
 
 class Evaluation {
 private:

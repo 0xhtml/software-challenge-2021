@@ -1,5 +1,9 @@
-#include <algorithm>
 #include "Evaluation.h"
+
+#include <algorithm>
+
+#include "Constants.h"
+#include "GameState.h"
 #include "Pieces.h"
 
 Evaluation::Evaluation() {
@@ -31,14 +35,14 @@ int Evaluation::getSide(const GameState &gameState, const int team) const {
     U32 first = gameState.board[team][0] | gameState.board[team + 2][0];
     U32 last = gameState.board[team][BOARD_MAX] | gameState.board[team + 2][BOARD_MAX];
 
-    if (first & 1) {
-        if (first & 1 << BOARD_MAX) return 0;
-        if (last & 1) return 1;
+    if (first & 1) { // x=0, y=0
+        if (first & 1 << BOARD_MAX) return 0; // x=0, y=19
+        if (last & 1) return 1; // x=19,y=0
     }
 
-    if (last & 1 << BOARD_MAX) {
-        if (last & 1) return 2;
-        if (first & 1 << BOARD_MAX) return 3;
+    if (last & 1 << BOARD_MAX) { // x=19, y=19
+        if (last & 1) return 2; // x=19,y=0
+        if (first & 1 << BOARD_MAX) return 3; // x=0,y=19
     }
 
     return -1;

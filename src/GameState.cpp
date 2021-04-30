@@ -1,5 +1,8 @@
 #include "GameState.h"
-#include "Pieces.h"
+
+#include <vector>
+
+#include "Types.h"
 
 U32 GameState::getValidFields(const int color, const int x) const {
     U32 corners = horizontalNeighbours[color][x] << 1 | horizontalNeighbours[color][x] >> 1;

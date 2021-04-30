@@ -1,15 +1,22 @@
-#include <bitset>
-#include <iostream>
 #include "Network.h"
+
+#include <bitset>
+#include <boost/asio.hpp>
+#include <iostream>
+#include <string>
+#include <pugixml.hpp>
+
 #include "Strings.h"
+#include "Types.h"
 
 Network::Network(const std::string &host, const int port) {
-    ip::tcp::endpoint endpoint;
+    boost::asio::ip::tcp::endpoint endpoint;
 
     if (host == "localhost") {
-        endpoint.address(ip::make_address("127.0.0.1"));
+        endpoint.address(boost::asio::ip::make_address("127.0.0.1"));
     } else {
-        endpoint = *ip::tcp::resolver(ioService).resolve(ip::tcp::resolver::query(host, ""));
+        boost::asio::ip::tcp::resolver::query query{host, ""};
+        endpoint = *boost::asio::ip::tcp::resolver(ioService).resolve(query);
     }
 
     endpoint.port(port);
@@ -19,10 +26,13 @@ Network::Network(const std::string &host, const int port) {
 }
 
 void Network::send(const std::string &data) {
-    write(socket, buffer(data), error);
+    boost::system::error_code error;
+    write(socket, boost::asio::buffer(data), error);
 }
 
 std::string Network::receive() {
+    boost::system::error_code error;
+
     std::size_t bytes = read_until(socket, receiveBuffer, "</room>", error);
 
     if (!error) {
@@ -46,6 +56,8 @@ void Network::joinReservation(const std::string &reservation) {
 }
 
 void normalizeMoveVariation(Move &move) {
+    // Some moves are precisely the same due to symmetric pieces.
+    // Those moves are not supported and therefore have to be normalized.
     switch (move.piece) {
         case 0:
         case 6:
@@ -191,7 +203,10 @@ void Network::gameLoop() {
                 parseGameState(roomMessageData.child("state"));
             } else if (roomMessageDataClass == "result") {
                 pugi::xml_node winner = roomMessageData.child("winner");
-                printf("WINNER %s %s\n", winner.attribute("displayName").value(), winner.child("color").text().get());
+
+                printf("WINNER %s", winner.attribute("displayName").value());
+                printf("%s\n", winner.child("color").text().get());
+
                 running = false;
             } else if (roomMessageDataClass == "error") {
                 printf("ERROR %s\n", roomMessageData.attribute("message").value());
@@ -206,7 +221,9 @@ void Network::gameLoop() {
 void Network::close() {
     send("<sc.protocol.responses.CloseConnection />");
     send("</protocol>");
-    socket.shutdown(ip::tcp::socket::shutdown_both, error);
+
+    boost::system::error_code error;
+    socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
     socket.close(error);
 
     std::cout << std::endl;

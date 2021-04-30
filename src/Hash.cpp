@@ -1,5 +1,8 @@
 #include "Hash.h"
+
+#include "Constants.h"
 #include "Pieces.h"
+#include "Types.h"
 
 Hash::Hash() {
     U64 next = 1;

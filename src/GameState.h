@@ -1,10 +1,11 @@
 #pragma once
 
 #include <vector>
+
 #include "Constants.h"
 #include "Hash.h"
-#include "Types.h"
 #include "Pieces.h"
+#include "Types.h"
 
 class GameState {
 private:
