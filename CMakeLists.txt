@@ -12,13 +12,12 @@ target_link_libraries(main pugixml)
 target_link_libraries(main pthread)
 
 add_executable(tests tests/tests.cpp tests/test-GameState.cpp tests/test-Pieces.cpp src/GameState.cpp src/Hash.cpp src/Pieces.cpp)
-target_compile_definitions(tests PUBLIC NO_OUTPUT)
+target_compile_definitions(tests PUBLIC TESTING)
 
 add_executable(masstest utils/masstest.cpp src/Algorithm.cpp src/Evaluation.cpp src/GameState.cpp src/Hash.cpp src/Pieces.cpp)
-target_compile_definitions(masstest PUBLIC NO_OUTPUT)
+target_compile_definitions(masstest PUBLIC TESTING)
 target_link_libraries(masstest pthread)
 
 add_executable(bench utils/bench.cpp src/Algorithm.cpp src/Evaluation.cpp src/GameState.cpp src/Hash.cpp src/Pieces.cpp)
-target_compile_definitions(bench PUBLIC NO_OUTPUT)
-target_compile_definitions(bench PUBLIC NO_TIMEOUT)
+target_compile_definitions(bench PUBLIC TESTING)
 target_link_libraries(bench benchmark)

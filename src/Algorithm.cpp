@@ -9,18 +9,18 @@
 #include "Types.h"
 
 Algorithm::Algorithm() {
+#ifndef TESTING
     transpositions.rehash(2700023);
     transpositions.max_load_factor(-1);
+#endif
 }
 
 bool Algorithm::checkTimeout() {
-#ifndef NO_TIMEOUT
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() >= 1950) {
         timeout = true;
         return true;
     }
-#endif
     return false;
 }
 
@@ -100,7 +100,7 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
         }
     }
 
-#ifndef NO_OUTPUT
+#ifndef TESTING
     printf("D%-2d S%-4d M{ %u %2u %u %u %2u %2u }\n", depth, alpha, bestMove.color, bestMove.piece,
            bestMove.rotation, bestMove.flipped, bestMove.x, bestMove.y);
 #endif
@@ -108,7 +108,7 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
 }
 
 Move Algorithm::iterativeDeepening(GameState &gameState) {
-#ifndef NO_OUTPUT
+#ifndef TESTING
     printf("       --- TURN %2d ---\n", gameState.turn);
 #endif
 
@@ -119,9 +119,12 @@ Move Algorithm::iterativeDeepening(GameState &gameState) {
 
     if (gameState.turn < 14) {
         move = alphaBetaRoot(gameState, 1, -1000, 1000);
+
+#ifndef TESTING
         for (int depth = 15 - gameState.turn; !timeout; ++depth) {
             alphaBetaRoot(gameState, depth, -1000, 1000);
         }
+#endif
     } else {
         for (int depth = 1; !timeout && depth <= 20; ++depth) {
             Move newMove = alphaBetaRoot(gameState, depth, -1000, 1000);
@@ -129,7 +132,7 @@ Move Algorithm::iterativeDeepening(GameState &gameState) {
         }
     }
 
-#ifndef NO_OUTPUT
+#ifndef TESTING
     int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
     printf("     --- TIME %4dms ---\n\n", time);
 #endif
