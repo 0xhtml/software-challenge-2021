@@ -52,22 +52,26 @@ void Evaluation::evaluateSpace(const GameState &gameState, const int team, int &
     int side = getSide(gameState, team);
     if (side == -1) return;
 
-    for (int x = side == 1 ? BOARD_SIZE / 2 : 0; x < (side == 0 ? BOARD_SIZE / 2 : BOARD_SIZE); ++x) {
+    for (int x = 0; x < BOARD_SIZE; ++x) {
         U32 mask;
 
+        const int a = x + 1;
+        const int b = BOARD_MAX - x + 1;
         switch (side) {
             case 0:
-                mask = 0xFFFFF << x & 0xFFFFF >> x;
+                mask = 0xFFFFF << a & 0xFFFFF >> a;
                 break;
             case 1:
-                mask = 0xFFFFF >> (x < BOARD_MAX / 2 ? BOARD_MAX - x : x);
+                mask = 0xFFFFF >> a & 0xFFFFF >> b;
                 break;
             case 2:
-                mask = 0xFFFFF << (BOARD_MAX - x) & 0xFFFFF >> (BOARD_MAX - x);
+                mask = 0xFFFFF << b & 0xFFFFF >> b;
                 break;
             case 3:
-                mask = 0xFFFFF << (x < BOARD_MAX / 2 ? BOARD_MAX - x : x);
+                mask = 0xFFFFF << a & 0xFFFFF << b;
         }
+
+        if (mask == 0) continue;
 
         value -= __builtin_popcount(gameState.boardOR[x] & mask);
         value -= __builtin_popcount(gameState.board[team + 1][x] & mask);
