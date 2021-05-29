@@ -33,10 +33,10 @@ private:
 
     int alphaBeta(GameState &gameState, int depth, int alpha, int beta);
 
+    Move alphaBetaRoot(GameState &gameState, int depth, int alpha, int beta);
+
 public:
     Algorithm();
-
-    Move alphaBetaRoot(GameState &gameState, int depth, int alpha, int beta);
 
     Move iterativeDeepening(GameState &gameState);
 };
