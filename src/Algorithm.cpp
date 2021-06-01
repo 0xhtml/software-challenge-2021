@@ -15,7 +15,7 @@ Algorithm::Algorithm() {
 #endif
 }
 
-bool Algorithm::checkTimeout() {
+bool Algorithm::checkTimeout(const Time start) {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() >= 1950) {
         timeout = true;
@@ -36,8 +36,8 @@ std::vector<Move> Algorithm::sortedPossibleMoves(GameState &gameState) const {
     return possibleMoves;
 }
 
-int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const int beta) {
-    if (checkTimeout()) {
+int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const int beta, const Time start) {
+    if (checkTimeout(start)) {
         return 0;
     }
 
@@ -58,7 +58,7 @@ int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const
 
     for (auto move : sortedPossibleMoves(gameState)) {
         gameState.performMove(move);
-        int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        int score = -alphaBeta(gameState, depth - 1, -beta, -alpha, start);
         gameState.undoMove(move);
 
         if (timeout) return 0;
@@ -80,8 +80,8 @@ int Algorithm::alphaBeta(GameState &gameState, const int depth, int alpha, const
     return alpha;
 }
 
-Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, const int beta) {
-    if (checkTimeout()) {
+Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, const int beta, const Time start) {
+    if (checkTimeout(start)) {
         return {5};
     }
 
@@ -89,7 +89,7 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
 
     for (Move move : gameState.getPossibleMoves()) {
         gameState.performMove(move);
-        int score = -alphaBeta(gameState, depth - 1, -beta, -alpha);
+        int score = -alphaBeta(gameState, depth - 1, -beta, -alpha, start);
         gameState.undoMove(move);
         if (timeout) return bestMove;
 
@@ -107,34 +107,25 @@ Move Algorithm::alphaBetaRoot(GameState &gameState, const int depth, int alpha, 
     return bestMove;
 }
 
-Move Algorithm::iterativeDeepening(GameState &gameState) {
-#ifndef TESTING
-    printf("       --- TURN %2d ---\n", gameState.turn);
-#endif
-
-    start = std::chrono::system_clock::now();
+Move Algorithm::iterativeDeepening(GameState &gameState, const Time start) {
     timeout = false;
 
     Move move{};
 
     if (gameState.turn < 14) {
-        move = alphaBetaRoot(gameState, 1, -1000, 1000);
+        move = alphaBetaRoot(gameState, 1, -1000, 1000, start);
 
 #ifndef TESTING
         for (int depth = 15 - gameState.turn; !timeout; ++depth) {
-            alphaBetaRoot(gameState, depth, -1000, 1000);
+            alphaBetaRoot(gameState, depth, -1000, 1000, start);
         }
 #endif
     } else {
         for (int depth = 1; !timeout && depth <= 20; ++depth) {
-            Move newMove = alphaBetaRoot(gameState, depth, -1000, 1000);
+            Move newMove = alphaBetaRoot(gameState, depth, -1000, 1000, start);
             if (!timeout || depth == 1) move = newMove;
         }
     }
 
-#ifndef TESTING
-    int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
-    printf("     --- TIME %4dms ---\n\n", time);
-#endif
     return move;
 }

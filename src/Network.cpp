@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <boost/asio.hpp>
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <pugixml.hpp>
@@ -161,6 +162,8 @@ void Network::gameLoop() {
 
     while (running) {
         std::string data = receive();
+        Time start = std::chrono::system_clock::now();
+
         if (data.empty()) {
             printf("data is empty\n");
             break;
@@ -192,13 +195,23 @@ void Network::gameLoop() {
             std::string roomMessageDataClass = roomMessageData.attribute("class").value();
 
             if (roomMessageDataClass == "sc.framework.plugins.protocol.MoveRequest") {
-                Move move = algorithm.iterativeDeepening(gameState);
+#ifndef TESTING
+                printf("       --- TURN %2d ---\n", gameState.turn);
+#endif
+
+                Move move = algorithm.iterativeDeepening(gameState, start);
 
                 if (move.color >= COLOR_COUNT) {
                     move = gameState.getPossibleMoves()[0];
                 }
 
                 send(moveToXML(move));
+
+#ifndef TESTING
+                Time now = std::chrono::system_clock::now();
+                int time = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+                printf("     --- TIME %4dms ---\n\n", time);
+#endif
             } else if (roomMessageDataClass == "memento") {
                 parseGameState(roomMessageData.child("state"));
             } else if (roomMessageDataClass == "result") {
